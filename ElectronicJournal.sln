@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectronicJournal.Data", "ElectronicJournal.Data\ElectronicJournal.Data.csproj", "{F28C6F8E-B20F-49BC-9CDF-99BFE8A971FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectronicJournal.UI", "ElectronicJournal.UI\ElectronicJournal.UI.csproj", "{764F5EF2-EA1C-4D04-B354-F36D3B1D1681}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F28C6F8E-B20F-49BC-9CDF-99BFE8A971FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F28C6F8E-B20F-49BC-9CDF-99BFE8A971FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F28C6F8E-B20F-49BC-9CDF-99BFE8A971FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F28C6F8E-B20F-49BC-9CDF-99BFE8A971FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{764F5EF2-EA1C-4D04-B354-F36D3B1D1681}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{764F5EF2-EA1C-4D04-B354-F36D3B1D1681}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{764F5EF2-EA1C-4D04-B354-F36D3B1D1681}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{764F5EF2-EA1C-4D04-B354-F36D3B1D1681}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
