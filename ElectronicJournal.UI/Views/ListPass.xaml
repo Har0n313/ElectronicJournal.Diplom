@@ -1,0 +1,29 @@
+﻿<Window x:Class="ElectronicJournal.Views.ListPass"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ElectronicJournal.Views"
+        mc:Ignorable="d"
+        Title="ListPass" Height="450" Width="800">
+    <Grid>
+        <Label Height="34" Content="Список студентов" Background="#1E90FF" Foreground="White" FontSize="20" VerticalAlignment="Top"/>
+        <StackPanel Margin="0,34,195,0">
+            <DataGrid x:Name="dataGrid" AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Фамилия" Binding="{Binding Path=Student.surnameStudent}"/>
+                    <DataGridTextColumn Header="Имя" Binding="{Binding Path=Student.nameStudent}"/>
+                    <DataGridTextColumn Header="Отчество" Binding="{Binding Path=Student.middleNameStudent}"/>
+                    <DataGridTextColumn Header="Предмет" Binding="{Binding Path=Discipline.nameDiscipline}"/>
+                    <DataGridTextColumn Header="Пропуск" Binding="{Binding Path=Type.nameType}"/>
+                    <DataGridTextColumn Header="Дата" Binding="{Binding Path=data}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+        <StackPanel Margin="610,34,0,0">
+            <TextBlock  Margin="0 100 0 0" Text="Введите дату(дд.мм.гг)" Width="160"/>
+            <TextBox Margin="0 2 0 0" Width="155" x:Name="dateTxt"/>
+            <Button Margin="0 3 0 0" Content="Найти" Width="134" x:Name="searchBt" Click="searchBt_Click" />
+        </StackPanel>
+    </Grid>
+</Window>

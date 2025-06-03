@@ -1,0 +1,40 @@
+﻿<Window x:Class="ElectronicJournal.Views.TeacherWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ElectronicJournal.Views"
+        mc:Ignorable="d"
+        Title="TeacherWin" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="159*"/>
+        </Grid.ColumnDefinitions>
+        <Label Background="#1E90FF" x:Name="namelb" Foreground="White" FontSize="20" Margin="0,0,0,376" Grid.ColumnSpan="2"/>
+        <Label Margin="0,38,0,0" Height="41" Content="Список студентов" Background="#1E90FF" Foreground="White" FontSize="20" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <StackPanel Margin="0,84,195,10" Grid.ColumnSpan="2">
+            <DataGrid Margin="0 0 240 0" x:Name="dataGrid" AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Фамилия" Binding="{Binding Path=Student.surnameStudent}"/>
+                    <DataGridTextColumn Header="Имя" Binding="{Binding Path=Student.nameStudent}"/>
+                    <DataGridTextColumn Header="Отчество" Binding="{Binding Path=Student.middleNameStudent}"/>
+                    <DataGridTextColumn Header="Предмет" Binding="{Binding Path=Discipline.nameDiscipline}"/>
+                    <DataGridTextColumn Header="Оценка" Binding="{Binding Path=mark}"/>
+                    <DataGridTextColumn Header="Вид работы" Binding="{Binding Path=Type.nameType}"/>
+                    <DataGridTextColumn Header="Класс" Binding="{Binding Path=Student.Class.nameClass}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Margin="555,0,0,0">
+            <TextBlock Margin="0 80 0 3" Text="Введите группу" Width="150"/>
+            <TextBox Margin="0 0 0 0" Width="155" x:Name="classTxtBx"/>
+            <Button Margin="0 10 0 0" Content="Список группы" Width="134" x:Name="listBt" Click="listBt_Click"/>
+            <Button Margin="0 50 0 0" Content="Список дисциплин" Width="134" x:Name="listDiscipline" Click="listDiscipline_Click" />
+            <Button Margin="0 20 0 0" Content="Редактировать журнал" Width="134" x:Name="editBt" Click="editBt_Click"/>
+            <Button Margin="0 20 0 0" Content="Посещаймость" Width="134" x:Name="passBt" Click="passBt_Click"/>
+            <Button Margin="0 20 0 0" Content="Домашнее задание" Width="134" x:Name="HomeworkBt" Click="HomeworkBt_Click"/>
+            <Button Margin="0 20 0 0" Content="Назад" Width="134" x:Name="Back" Click="Back_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

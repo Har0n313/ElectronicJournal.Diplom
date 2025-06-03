@@ -3,10 +3,23 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ElectronicJournal.WPF"
+        xmlns:local="clr-namespace:ElectronicJournal"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
+        Title="MainWindow" Height="480" Width="400">
+    <Grid Background="#1E90FF">
+        <Label Foreground="White" Content="Авторизация" HorizontalAlignment="Center" VerticalAlignment="Top" Width="400" Height="50" HorizontalContentAlignment="Center" FontSize="30"/>
+        <StackPanel Margin="55,55,55,55" Background="#00BFFF">
+            <Label Margin="0 70 0 0" Content="Логин" FontSize="16" Width="240" Foreground="White"/>
+            <TextBox Margin="0 5 0 0" Width="240" FontSize="16" x:Name="loginTxt"/>
+            <Label Content="Пароль" Margin="0 5 0 0" Width="240" FontSize="16" Foreground="White"/>
+            <PasswordBox Margin="0 5 0 0" Width="242" FontSize="16" x:Name="passwordTxt"/>
+            <Button Background="#1E90FF" Foreground="White" Content="Войти" Margin="0 70 0 0" FontWeight="Bold" x:Name="EnterBt" Height="30" Width="189" Click="EnterBt_Click">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+        </StackPanel>
     </Grid>
 </Window>

@@ -1,0 +1,24 @@
+﻿<Window x:Class="ElectronicJournal.Views.StudentWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ElectronicJournal.Views"
+        mc:Ignorable="d"
+        Title="StudentWin" Height="450" Width="800" ResizeMode="NoResize">
+    <Grid>
+        <StackPanel>
+            <Label Background="#1E90FF" x:Name="namelb" Foreground="White" FontSize="20"/>
+            <Label Margin="0 0 0 0" Height="34" Content="Список оценок" Background="#1E90FF" Foreground="White" FontSize="20"/>
+            <DataGrid Margin="0 0 240 0" x:Name="dataGrid" AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Предмет" Binding="{Binding Path=Discipline.nameDiscipline}"/>
+                    <DataGridTextColumn Header="Оценка" Binding="{Binding Path=mark}"/>
+                    <DataGridTextColumn Header="Вид работы" Binding="{Binding Path=Type.nameType}"/>
+                    <DataGridTextColumn Header="Дата получения" Binding="{Binding Path=date}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <Button Content="Назад" Width="90" Margin="600 150 0 0" x:Name="Back" Click="Back_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,20 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ElectronicJournal.Domain.Enums;
 
 namespace ElectronicJournal.Domain.Entites;
 
 public class User
 {
-    [Key]
     public int Id { get; set; }
 
-    [Required, MaxLength(50)]
     public string Username { get; set; }
-
-    [Required, MaxLength(255)]
     public string PasswordHash { get; set; }
 
-    [Required, MaxLength(20)]
-    public string Role { get; set; } // student, teacher, admin
+    public UserRole Role { get; set; }
 
-    public int? LinkedId { get; set; } // StudentId или TeacherId в зависимости от роли
+    public int? StudentId { get; set; }
+    public Student Student { get; set; }
+
+    public int? TeacherId { get; set; }
+    public Teacher Teacher { get; set; }
 }
