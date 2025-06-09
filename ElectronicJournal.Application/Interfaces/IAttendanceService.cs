@@ -6,7 +6,7 @@ public interface IAttendanceService
 {
     Task<Attendance> MarkAttendance(Attendance attendance);
 
-    Task<Attendance> UpdateAttendance(int id, Attendance attendance);
+    Task<Attendance> UpdateAttendance(Attendance attendance);
 
     Task<ICollection<Attendance>> GetAttendanceByLesson(int lessonId);
 

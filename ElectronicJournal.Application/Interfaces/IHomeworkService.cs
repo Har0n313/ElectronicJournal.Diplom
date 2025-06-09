@@ -6,7 +6,7 @@ public interface IHomeworkService
 {
     Task<Homework> CreateHomework(Homework dto);
 
-    Task<Homework> UpdateHomework(int id, Homework dto);
+    Task<Homework> UpdateHomework(Homework dto);
 
     Task<bool> DeleteHomework(int id);
 

@@ -19,9 +19,9 @@ public class GroupService : IGroupService
         return await _context.Groups.ToListAsync();
     }
 
-    public Task<Group> GetGroupById(int id)
+    public async Task<Group> GetGroupById(int id)
     {
-        var group = _context.Groups.FirstOrDefaultAsync(g => g.Id == id);
+        var group = await _context.Groups.FirstOrDefaultAsync(g => g.Id == id);
         if (group == null)
         {
             throw new KeyNotFoundException($"Group with ID {id} not found.");
@@ -49,20 +49,21 @@ public class GroupService : IGroupService
         return Task.FromResult(group);
     }
 
-    public async Task<Group> UpdateGroup(int id, Group group)
+    public async Task<Group> UpdateGroup(Group group)
     {
         if (group == null)
         {
             throw new ArgumentNullException(nameof(group));
         }
 
-        var existingGroupe = await _context.Groups.FindAsync(id);
+        var existingGroupe = await _context.Groups.FindAsync(group.Id);
         if (existingGroupe == null)
         {
-            throw new KeyNotFoundException($"Grade with ID {id} not found.");
+            throw new KeyNotFoundException($"Grade with ID {group.Id} not found.");
         }
 
         existingGroupe.Name = group.Name;
+        existingGroupe.NameSpecialty = group.NameSpecialty;
         existingGroupe.SpecialtyCode = group.SpecialtyCode;
         existingGroupe.AdmissionYear = group.AdmissionYear;
 
@@ -82,6 +83,11 @@ public class GroupService : IGroupService
         _context.Groups.Remove(group);
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<Group> GetGroupByName(string name)
+    {
+        return await _context.Groups.FirstOrDefaultAsync(g => g.Name == name) ?? throw new InvalidOperationException();
     }
 
     public async Task<ICollection<Student>> GetGroupStudents(int groupId)

@@ -1,103 +1,135 @@
-﻿using ElectronicJournal.DB;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using ElectronicJournal.Application.Interfaces;
+using ElectronicJournal.Domain.Entites;
+using ElectronicJournal.Domain.Enums;
 
-namespace ElectronicJournal.Views
+namespace ElectronicJournal.WPF.Views
 {
-	/// <summary>
-	/// Логика взаимодействия для EditWin.xaml
-	/// </summary>
-	public partial class EditWin : Window
-	{
-		ElectJournalEntities journalEntities = new ElectJournalEntities();
-		public int? IdDisc {  get; set; }
-		public int IdTeacher {  get; set; }
-		public string klass { get; set; } 
-		public EditWin(int? idDisc, int idTeach,string cl)
-		{
-			InitializeComponent();
-			IdDisc = idDisc;
-			IdTeacher = idTeach;
-			klass = cl;
-			Update();
-		}
-		public void Update()
-		{
-			dataGrid.ItemsSource = journalEntities.Assessment.Where(m => m.Student.Class.nameClass == klass && m.idDiscipline == IdDisc).ToList();
-		}
+    public partial class EditWin
+    {
+        private readonly IAssessmentService _assessmentService;
+        private int IdDisc { get; set; }
+        private int IdTeacher { get; set; }
+        private string Klass { get; set; }
 
-		private void EditBt_Click(object sender, RoutedEventArgs e)
-		{
-			try
-			{
-				var x = dataGrid.SelectedItem as Assessment;
-				var k = journalEntities.Type.Where(m => m.nameType == typeTxt.Text).Single();
-				x.mark = int.Parse(markTxt.Text);
-				x.idType = k.idType;
-				x.date = Convert.ToDateTime(dataTxt.Text);
-				journalEntities.SaveChanges();
-			}
-			catch
-			{
-				MessageBox.Show("Не все данные были введены корректно");
-			}
-			Update();
-		}
+        public EditWin(int? idDisc, int idTeach, string cl, IAssessmentService assessmentService)
+        {
+            InitializeComponent();
+            IdDisc = idDisc ?? 0;
+            IdTeacher = idTeach;
+            Klass = cl;
+            _assessmentService = assessmentService;
+            LoadAssessmentTypes();
+            Update();
+        }
 
-		private void BackBt_Click(object sender, RoutedEventArgs e)
-		{
-			TeacherWin teacherWin = new TeacherWin(IdTeacher,IdDisc);
-			Close();
-			teacherWin.Show();
-		}
+        private async void Update()
+        {
+            var assessments = await _assessmentService.GetAssessmentsByClassAndDiscipline(Klass, IdDisc);
+            dataGrid.ItemsSource = assessments;
+        }
 
-		private void dataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
-		{
-			try
-			{
-				var x = dataGrid.SelectedItem as Assessment;
-				markTxt.Text = x.mark.ToString();
-				dataTxt.Text = x.date.ToString();
-				typeTxt.Text = x.Type.nameType.ToString();
-			}
-			catch
-			{}
-			Update();
-		}
+        private async void EditBt_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var selected = dataGrid.SelectedItem as Assessment;
+                if (selected == null) return;
+                
+                selected.GradeValue = int.Parse(markTxt.Text);
+                selected.Type = GetSelectedAssessmentType();
+                selected.DateCreated = datePicker.SelectedDate ?? DateTime.Now;
 
-		private void AddBt_Click(object sender, RoutedEventArgs e)
-		{
-			try
-			{
-				var x = dataGrid.SelectedItem as Assessment;
-				var k = journalEntities.Type.Where(m => m.nameType == typeTxt.Text).Single();
-				Assessment assessment = new Assessment()
-				{
-					idStudent = x.idStudent,
-					idDiscipline = IdDisc,
-					mark = int.Parse(markTxt.Text),
-					date = Convert.ToDateTime(dataTxt.Text),
-					idType = k.idType,
-				};
-				journalEntities.Assessment.Add(assessment);
-				journalEntities.SaveChanges();
-				Update();
-			}
-			catch
-			{
+                await _assessmentService.UpdateAssessments(selected);
+                Update();
+            }
+            catch
+            {
+                MessageBox.Show("Не все данные были введены корректно");
+            }
+        }
 
-			}
+        private void BackBt_Click(object sender, RoutedEventArgs e)
+        {
+            var teacherWin = new TeacherWin(IdTeacher, IdDisc, );
+            Close();
+            teacherWin.Show();
+        }
+
+        private void dataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        {
+            try
+            {
+                var selected = dataGrid.SelectedItem as Assessment;
+                if (selected == null) return;
+
+                markTxt.Text = selected.GradeValue.ToString();
+                datePicker.SelectedDate = selected.DateCreated;
+                typeComboBox.SelectedValue = selected.Type;
+            }
+            catch
+            {
+                MessageBox.Show("Выберите корректную запись");
+            }
+        }
+
+        private async void AddBt_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var selected = dataGrid.SelectedItem as Assessment;
+                if (selected == null) return;
+
+
+                var newAssessment = new Assessment
+                {
+                    StudentId = selected.StudentId,
+                    LessonId = IdDisc,
+                    GradeValue = int.Parse(markTxt.Text),
+                    DateCreated = GetSelectedDate(),
+                    Type = GetSelectedAssessmentType(),
+                };
+
+                await _assessmentService.CreateGrade(newAssessment);
+                Update();
+            }
+            catch
+            {
+                MessageBox.Show("Не удалось добавить запись. Проверьте введённые данные.");
+            }
+        }
+
+        private void LoadAssessmentTypes()
+        {
+            var enumValues = Enum.GetValues(typeof(AssessmentType)).Cast<AssessmentType>();
+            var displayList = enumValues
+                .ToDictionary(
+                    val => val,
+                    val => val.GetType()
+                        .GetMember(val.ToString())
+                        .First()
+                        .GetCustomAttribute<DisplayAttribute>()?.Name ?? val.ToString()
+                );
+
+            typeComboBox.ItemsSource = displayList;
+        }
+
+        // Пример: чтобы получить выбранный тип
+        private AssessmentType GetSelectedAssessmentType()
+        {
+            if (typeComboBox.SelectedValue is AssessmentType selectedType)
+                return selectedType;
+            MessageBox.Show("Выберите тип оценки");
+            return AssessmentType.Homework;
+        }
+
+        // Пример: чтобы получить дату
+        private DateTime GetSelectedDate()
+        {
+            return (DateTime)datePicker.SelectedDate!;
         }
     }
 }

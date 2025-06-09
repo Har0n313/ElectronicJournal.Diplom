@@ -3,24 +3,33 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ElectronicJournal.Views"
         mc:Ignorable="d"
-        Title="AddGroup" Height="450" Width="800">
+        Title="AddGroup" Height="486" Width="800">
     <Grid>
         <Label Background="#1E90FF" Content="Окно админа" x:Name="namelb" Foreground="White" FontSize="20" Margin="0,0,0,367" />
-        <Label Background="#1E90FF" Foreground="White" FontSize="20" Margin="0,44,0,350" Content="Список дисциплин" />
-        <DataGrid Margin="0,99,240,165" x:Name="dataGrid" AutoGenerateColumns="False" SelectedCellsChanged="dataGrid_SelectedCellsChanged">
+        <Label Background="#1E90FF" Foreground="White" FontSize="20" Margin="0,44,0,378" Content="Список групп" />
+        <DataGrid Margin="0,99,240,184" x:Name="dataGrid" AutoGenerateColumns="False" SelectedCellsChanged="dataGrid_SelectedCellsChanged">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Класс" Binding="{Binding Path=nameClass}"/>
+                <DataGridTextColumn Header="Код специальности" Binding="{Binding Path=nameClass}"/>
+                <DataGridTextColumn Header="Специальность" Binding="{Binding Path=nameClass}"/>
+                <DataGridTextColumn Header="Группа" Binding="{Binding Path=nameClass}"/>
+                <DataGridTextColumn Header="Год поступления" Binding="{Binding Path=nameClass}"/>
             </DataGrid.Columns>
         </DataGrid>
         <StackPanel Margin="0,304,240,0">
-            <TextBlock Text="Класс" Width="120" Margin="2 2 0 0" HorizontalAlignment="Left"/>
+            <TextBlock Text="Код специальности" Width="120" Margin="2 2 0 0" HorizontalAlignment="Left"/>
+            <TextBox Width="120" HorizontalAlignment="Left" Margin="0 5 0 0" x:Name="codedisTxt"/>
+            <TextBlock Text="Специальность" Width="120" Margin="2 2 0 0" HorizontalAlignment="Left"/>
             <TextBox Width="120" HorizontalAlignment="Left" Margin="0 5 0 0" x:Name="discTxt"/>
+            <TextBlock Text="Группа" Width="120" Margin="2 2 0 0" HorizontalAlignment="Left"/>
+            <TextBox Width="120" HorizontalAlignment="Left" Margin="0 5 0 0" x:Name="dicNameTxt"/>
+            <TextBlock Text="Год поступления" Width="120" Margin="2 2 0 0" HorizontalAlignment="Left"/>
+            <TextBox Width="120" HorizontalAlignment="Left" Margin="0 5 0 0" x:Name="yearsTxt"/>
         </StackPanel>
         <StackPanel Margin="560,77,0,0">
             <Button Margin="0 50 0 0" Content="Добавить" Width="105" x:Name="AddBt" Click="AddBt_Click"/>
             <Button Margin="0 20 0 0" Content="Изменить" Width="105" x:Name="EditBt" Click="EditBt_Click"/>
+            <Button Margin="0 20 0 0" Content="Удалить" Width="105" x:Name="DeletBt" Click="DeletBt_Click"/>
         </StackPanel>
     </Grid>
 </Window>

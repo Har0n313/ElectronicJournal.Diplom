@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ElectronicJournal.Views"
         mc:Ignorable="d"
         Title="AddStudent" Height="485" Width="800">
     <Grid>
@@ -31,7 +30,9 @@
             <TextBlock Text="Пароль" Width="120" Margin="150 -130 0 0" HorizontalAlignment="Left" Height="17"/>
             <TextBox Width="120" HorizontalAlignment="Left" Margin="150 -95 0 0" Height="18" x:Name="passTxt" />
             <TextBlock Text="Класс" Width="120" Margin="150 -55 0 0" HorizontalAlignment="Left" Height="17"/>
-            <TextBox Width="120" HorizontalAlignment="Left" Margin="150 -17 0 0" Height="18" x:Name="klsTxt"/>
+            <ComboBox Width="120" HorizontalAlignment="Left" Margin="150 -17 0 0" Height="25"
+                      x:Name="GroupComboBox" DisplayMemberPath="Name" SelectedValuePath="Id"/>
+
         </StackPanel>
         <StackPanel Margin="560,77,0,0">
             <Button Margin="0 50 0 0" Content="Добавить" Width="105" x:Name="AddBt" Click="AddBt_Click"/>

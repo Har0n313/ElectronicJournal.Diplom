@@ -14,86 +14,53 @@ public class TeacherService : ITeacherService
         _context = context;
     }
 
-    public async Task<ICollection<Teacher>> GetAllTeachers()
-    {
-        var query = _context.Teachers
-            .Include(t => t.SubjectAssignments)
-            .ThenInclude(sa => sa.Subject)
-            .Include(t => t.SubjectAssignments)
-            .ThenInclude(sa => sa.Group)
-            .Include(t => t.SubjectAssignments)
-            .ThenInclude(sa => sa.Semester);
-
-        return await query.ToListAsync();
-    }
-
-    public async Task<Teacher> GetTeacherById(int id)
-    {
-        var query = _context.Teachers
-            .Include(t => t.SubjectAssignments)
-            .ThenInclude(sa => sa.Subject)
-            .Include(t => t.SubjectAssignments)
-            .ThenInclude(sa => sa.Group)
-            .Include(t => t.SubjectAssignments)
-            .ThenInclude(sa => sa.Semester);
-
-        var teacher = await query.FirstOrDefaultAsync(t => t.Id == id);
-        if (teacher == null)
-        {
-            throw new KeyNotFoundException($"Преподаватель с ID {id} не найден.");
-        }
-
-        return teacher;
-    }
-
     public async Task<Teacher> CreateTeacher(Teacher teacher)
     {
         if (teacher == null)
-        {
             throw new ArgumentNullException(nameof(teacher));
-        }
-
-        if (string.IsNullOrWhiteSpace(teacher.FirstName) || string.IsNullOrWhiteSpace(teacher.LastName) ||
-            string.IsNullOrWhiteSpace(teacher.Position))
-        {
-            throw new ArgumentException("Обязательные поля (FirstName, LastName, Position) не могут быть пустыми.");
-        }
 
         _context.Teachers.Add(teacher);
         await _context.SaveChangesAsync();
         return teacher;
     }
 
-    public async Task<Teacher> UpdateTeacher(int id, Teacher teacher)
+    public async Task<Teacher> GetTeacherById(int id)
     {
+        return await _context.Teachers
+            .Include(t => t.SubjectAssignments)
+            .ThenInclude(sa => sa.Subject)
+            .Include(t => t.User)
+            .FirstOrDefaultAsync(t => t.Id == id)
+            ?? throw new KeyNotFoundException($"Teacher with ID {id} not found.");
+    }
+
+    public async Task<ICollection<Teacher>> GetAllTeachers()
+    {
+        return await _context.Teachers
+            .Include(t => t.SubjectAssignments)
+            .ThenInclude(sa => sa.Subject)
+            .Include(t => t.User)
+            .ToListAsync();
+    }
+
+    public async Task<Teacher> UpdateTeacher(Teacher updated)
+    {
+        var teacher = await _context.Teachers.FindAsync(updated.Id);
         if (teacher == null)
-        {
-            throw new ArgumentNullException(nameof(teacher));
-        }
+            throw new KeyNotFoundException();
 
-        var existingTeacher = await _context.Teachers.FindAsync(id);
-        if (existingTeacher == null)
-        {
-            throw new KeyNotFoundException($"Преподаватель с ID {id} не найден.");
-        }
+        teacher.FirstName = updated.FirstName;
+        teacher.LastName = updated.LastName;
+        teacher.MiddleName = updated.MiddleName;
 
-        existingTeacher.FirstName = teacher.FirstName;
-        existingTeacher.LastName = teacher.LastName;
-        existingTeacher.MiddleName = teacher.MiddleName;
-        existingTeacher.Position = teacher.Position;
-
-        _context.Teachers.Update(existingTeacher);
         await _context.SaveChangesAsync();
-        return existingTeacher;
+        return teacher;
     }
 
     public async Task<bool> DeleteTeacher(int id)
     {
         var teacher = await _context.Teachers.FindAsync(id);
-        if (teacher == null)
-        {
-            throw new KeyNotFoundException($"Преподаватель с ID {id} не найден.");
-        }
+        if (teacher == null) return false;
 
         _context.Teachers.Remove(teacher);
         await _context.SaveChangesAsync();

@@ -1,33 +1,236 @@
-﻿<Window x:Class="ElectronicJournal.Views.ScheduleWin"
+﻿<Window x:Class="ElectronicJournal.WPF.Views.ScheduleWin"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ElectronicJournal.Views"
-        mc:Ignorable="d"
-        Title="ScheduleWin" Height="450" Width="800">
-    <Grid>
-        <Label Background="#1E90FF" Content="Окно расписания" x:Name="namelb" Foreground="White" FontSize="20" Margin="0,0,0,367" />
-        <Label Background="#1E90FF" Foreground="White" FontSize="20" Margin="0,44,0,340" Content="Расписание" />
-        <DataGrid Margin="0,77,240,0" x:Name="dataGrid" AutoGenerateColumns="False" SelectedCellsChanged="dataGrid_SelectedCellsChanged" >
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Класс" Binding="{Binding Path=Class.nameClass}"/>
-                <DataGridTextColumn Header="День недели" Binding="{Binding Path=day}"/>
-                <DataGridTextColumn Header="Предмет" Binding="{Binding Path=Teacher.Discipline.nameDiscipline}"/>
-            </DataGrid.Columns>
-        </DataGrid>
-        <StackPanel Margin="560,0,0,0">
-            <TextBlock Margin="0 150 0 0" Text="Введите группу" Width="220"/>
-            <TextBox x:Name="klassTxt" Width="220"/>
-            <Button Margin="0 10 0 0" Content="Получить расписание" x:Name="ListSheduleBt" Click="ListSheduleBt_Click" Width="220" />
-            <TextBlock Margin="0 10 0 0" Text="Класс" Width="220"/>
-            <TextBox x:Name="klTxt" Width="220"/>
-            <TextBlock Margin="0 10 0 0" Text="День недели" Width="220"/>
-            <TextBox x:Name="dayOnWeek" Width="220"/>
-            <TextBlock Margin="0 10 0 0" Text="Предмет" Width="220"/>
-            <TextBox x:Name="discTxt" Width="220"/>
-            <Button Margin="0 20 0 0" Content="Добавить" x:Name="AddStudentBt" Width="110" Click="AddStudentBt_Click"/>
-            <Button Margin="0 5 0 0" Content="Изменить" x:Name="EditBt" Width="110" Click="EditBt_Click"/>
-        </StackPanel>
-    </Grid>
+        Title="ScheduleWin" Height="600" Width="950"
+        Loaded="Window_Loaded">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <!-- Левая часть: таблица -->
+            <StackPanel Grid.Column="0" Margin="10">
+                <Label Background="#1E90FF" Content="Окно расписания" Foreground="White" FontSize="20" Padding="5" />
+                <Label Background="#1E90FF" Content="Расписание" Foreground="White" FontSize="16" Padding="3" Margin="0,10,0,10" />
+                <!-- День: Понедельник -->
+                    <TextBlock Text="Понедельник" FontWeight="Bold" Margin="0,10,0,5"/>
+                    <DataGrid x:Name="mondayGrid" AutoGenerateColumns="False" Height="130" Margin="0,0,0,10">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="№ пары" Binding="{Binding PairNumber}" Width="60" />
+                            <DataGridTextColumn Binding="{Binding Time}" Width="135">
+                                <DataGridTextColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="Время начала/ окончания пары"
+                                                   TextWrapping="Wrap"
+                                                   TextAlignment="Center"
+                                                   Width="120"/>
+                                    </DataTemplate>
+                                </DataGridTextColumn.HeaderTemplate>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn Binding="{Binding Subject}" Width="235">
+                                <DataGridTextColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="Наименование учебной дисциплины, междисциплинарного курса"
+                                                   TextWrapping="Wrap"
+                                                   TextAlignment="Center"
+                                                   Width="230"/>
+                                    </DataTemplate>
+                                </DataGridTextColumn.HeaderTemplate>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Ф.И.О преподавателя" Binding="{Binding Teacher}" Width="150"/>
+                            <DataGridTextColumn Header="№ кабинета" Binding="{Binding Room}" Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Вторник -->
+                    <TextBlock Text="Вторник" FontWeight="Bold" Margin="0,10,0,5"/>
+                    <DataGrid x:Name="tuesdayGrid" AutoGenerateColumns="False" Height="130" Margin="0,0,0,10">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="№ пары" Binding="{Binding PairNumber}" Width="60" />
+                            <DataGridTextColumn Binding="{Binding Time}" Width="135">
+                                <DataGridTextColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="Время начала/ окончания пары"
+                                                   TextWrapping="Wrap"
+                                                   TextAlignment="Center"
+                                                   Width="120"/>
+                                    </DataTemplate>
+                                </DataGridTextColumn.HeaderTemplate>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn Binding="{Binding Subject}" Width="235">
+                                <DataGridTextColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="Наименование учебной дисциплины, междисциплинарного курса"
+                                                   TextWrapping="Wrap"
+                                                   TextAlignment="Center"
+                                                   Width="230"/>
+                                    </DataTemplate>
+                                </DataGridTextColumn.HeaderTemplate>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Ф.И.О преподавателя" Binding="{Binding Teacher}" Width="150"/>
+                            <DataGridTextColumn Header="№ кабинета" Binding="{Binding Room}" Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Среда -->
+                    <TextBlock Text="Среда" FontWeight="Bold" Margin="0,10,0,5"/>
+                    <DataGrid x:Name="wednesdayGrid" AutoGenerateColumns="False" Height="130" Margin="0,0,0,10">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="№ пары" Binding="{Binding PairNumber}" Width="60" />
+                            <DataGridTextColumn Binding="{Binding Time}" Width="135">
+                                <DataGridTextColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="Время начала/ окончания пары"
+                                                   TextWrapping="Wrap"
+                                                   TextAlignment="Center"
+                                                   Width="120"/>
+                                    </DataTemplate>
+                                </DataGridTextColumn.HeaderTemplate>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn Binding="{Binding Subject}" Width="235">
+                                <DataGridTextColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="Наименование учебной дисциплины, междисциплинарного курса"
+                                                   TextWrapping="Wrap"
+                                                   TextAlignment="Center"
+                                                   Width="230"/>
+                                    </DataTemplate>
+                                </DataGridTextColumn.HeaderTemplate>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Ф.И.О преподавателя" Binding="{Binding Teacher}" Width="150"/>
+                            <DataGridTextColumn Header="№ кабинета" Binding="{Binding Room}" Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Четверг -->
+                    <TextBlock Text="Четверг" FontWeight="Bold" Margin="0,10,0,5"/>
+                    <DataGrid x:Name="thursdayGrid" AutoGenerateColumns="False" Height="130" Margin="0,0,0,10">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="№ пары" Binding="{Binding PairNumber}" Width="60" />
+                            <DataGridTextColumn Binding="{Binding Time}" Width="135">
+                                <DataGridTextColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="Время начала/ окончания пары"
+                                                   TextWrapping="Wrap"
+                                                   TextAlignment="Center"
+                                                   Width="120"/>
+                                    </DataTemplate>
+                                </DataGridTextColumn.HeaderTemplate>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn Binding="{Binding Subject}" Width="235">
+                                <DataGridTextColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="Наименование учебной дисциплины, междисциплинарного курса"
+                                                   TextWrapping="Wrap"
+                                                   TextAlignment="Center"
+                                                   Width="230"/>
+                                    </DataTemplate>
+                                </DataGridTextColumn.HeaderTemplate>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Ф.И.О преподавателя" Binding="{Binding Teacher}" Width="150"/>
+                            <DataGridTextColumn Header="№ кабинета" Binding="{Binding Room}" Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Пятница -->
+                    <TextBlock Text="Пятница" FontWeight="Bold" Margin="0,10,0,5"/>
+                    <DataGrid x:Name="fridayGrid" AutoGenerateColumns="False" Height="130" Margin="0,0,0,10">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="№ пары" Binding="{Binding PairNumber}" Width="60" />
+                            <DataGridTextColumn Binding="{Binding Time}" Width="135">
+                                <DataGridTextColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="Время начала/ окончания пары"
+                                                   TextWrapping="Wrap"
+                                                   TextAlignment="Center"
+                                                   Width="120"/>
+                                    </DataTemplate>
+                                </DataGridTextColumn.HeaderTemplate>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn Binding="{Binding Subject}" Width="235">
+                                <DataGridTextColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="Наименование учебной дисциплины, междисциплинарного курса"
+                                                   TextWrapping="Wrap"
+                                                   TextAlignment="Center"
+                                                   Width="230"/>
+                                    </DataTemplate>
+                                </DataGridTextColumn.HeaderTemplate>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Ф.И.О преподавателя" Binding="{Binding Teacher}" Width="150"/>
+                            <DataGridTextColumn Header="№ кабинета" Binding="{Binding Room}" Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Суббота -->
+                    <TextBlock Text="Суббота" FontWeight="Bold" Margin="0,10,0,5"/>
+                    <DataGrid x:Name="saturdayGrid" AutoGenerateColumns="False" Height="130" Margin="0,0,0,10">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="№ пары" Binding="{Binding PairNumber}" Width="60" />
+                            <DataGridTextColumn Binding="{Binding Time}" Width="135">
+                                <DataGridTextColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="Время начала/ окончания пары"
+                                                   TextWrapping="Wrap"
+                                                   TextAlignment="Center"
+                                                   Width="120"/>
+                                    </DataTemplate>
+                                </DataGridTextColumn.HeaderTemplate>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn Binding="{Binding Subject}" Width="235">
+                                <DataGridTextColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="Наименование учебной дисциплины, междисциплинарного курса"
+                                                   TextWrapping="Wrap"
+                                                   TextAlignment="Center"
+                                                   Width="230"/>
+                                    </DataTemplate>
+                                </DataGridTextColumn.HeaderTemplate>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Ф.И.О преподавателя" Binding="{Binding Teacher}" Width="150"/>
+                            <DataGridTextColumn Header="№ кабинета" Binding="{Binding Room}" Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+            </StackPanel>
+            <!-- Правая панель: поля и кнопки -->
+            <StackPanel Grid.Column="1" Margin="10,22,7,10">
+                <TextBlock Text="Введите группу" Margin="0,0,0,5" TextAlignment="Center"/>
+                <TextBox x:Name="klassTxt" Width="210"/>
+
+                <Button Content="Получить расписание" x:Name="ListSheduleBt" Width="210" Margin="0,10,0,10" Click="ListSheduleBt_Click"/>
+
+                <TextBlock Text="День недели" TextAlignment="Center"/>
+                <TextBox x:Name="dayTxt" Width="210"/>
+
+                <TextBlock Text="Номер пары" TextAlignment="Center"/>
+                <TextBox x:Name="pairNumberTxt" Width="210"/>
+
+                <TextBlock Text="Время" TextAlignment="Center"/>
+                <TextBox x:Name="timeTxt" Width="210"/>
+
+                <TextBlock Text="Предмет" TextAlignment="Center"/>
+                <TextBox x:Name="discTxt" Width="210"/>
+
+                <TextBlock Text="Преподаватель (ФИО)" TextAlignment="Center"/>
+                <ComboBox x:Name="teacherComboBox" Width="200" Margin="5" DisplayMemberPath="FullName" SelectedValuePath="Id"/>
+
+                <TextBlock Text="Кабинет" TextAlignment="Center"/>
+                <TextBox x:Name="roomTxt" Width="210"/>
+
+                <StackPanel Orientation="Horizontal" Margin="0,20,0,0" HorizontalAlignment="Center">
+                    <Button Content="Добавить" x:Name="AddBtn" Width="65" Margin="0,0,10,0" Click="AddBtn_Click"/>
+                    <Button Content="Изменить" x:Name="EditBtn" Width="65" Margin="0,0,10,0" Click="EditBtn_Click"/>
+                    <Button Content="Удалить" x:Name="DeleteBtn" Width="65" Click="DeleteBtn_Click"/>
+                </StackPanel>
+            </StackPanel>
+
+        </Grid>
+    </ScrollViewer>
 </Window>

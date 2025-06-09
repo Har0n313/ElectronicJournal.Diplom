@@ -3,24 +3,27 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ElectronicJournal.Views"
         mc:Ignorable="d"
         Title="AddDiscipline" Height="450" Width="800">
     <Grid>
-        <Label Background="#1E90FF" Content="Окно админа" x:Name="namelb" Foreground="White" FontSize="20" Margin="0,0,0,367" />
-        <Label Background="#1E90FF" Foreground="White" FontSize="20" Margin="0,44,0,350" Content="Список дисциплин" />
-        <DataGrid Margin="0,84,240,165" x:Name="dataGrid" AutoGenerateColumns="False" SelectedCellsChanged="dataGrid_SelectedCellsChanged">
+        <Label Background="#1E90FF" Content="Окно админа" x:Name="Namelb" Foreground="White" FontSize="20" Margin="0,0,0,367" />
+        <Label Background="#1E90FF" Foreground="White" FontSize="20" Margin="0,44,0,350" Content="Список учебных дисциплин" />
+        <DataGrid Margin="0,84,240,165" x:Name="DataGrid" AutoGenerateColumns="False" SelectedCellsChanged="dataGrid_SelectedCellsChanged">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Предмет" Binding="{Binding Path=nameDiscipline}"/>
+                <DataGridTextColumn Header="Код дисциплины" Binding="{Binding Path=codeDiscipline}"/>
+                <DataGridTextColumn Header="Учебная дисциплина" Binding="{Binding Path=nameDiscipline}"/>
             </DataGrid.Columns>
         </DataGrid>
-        <StackPanel Margin="0,304,240,0">
+        <StackPanel Margin="1,305,239,-1">
             <TextBlock Text="Дисциплина" Width="120" Margin="2 2 0 0" HorizontalAlignment="Left"/>
-            <TextBox Width="120" HorizontalAlignment="Left" Margin="0 5 0 0" x:Name="discTxt"/>
+            <TextBox Width="120" HorizontalAlignment="Left" Margin="0 5 0 0" x:Name="DiscTxt"/>
+            <TextBlock Text="Код учебной дисциплины" Width="120" Height="15" HorizontalAlignment="Left"/>
+            <TextBox Width="120" HorizontalAlignment="Left" Margin="0 5 0 0" x:Name="CodeTxt"/>
         </StackPanel>
         <StackPanel Margin="560,77,0,0">
             <Button Margin="0 50 0 0" Content="Добавить" Width="105" x:Name="AddBt" Click="AddBt_Click"/>
             <Button Margin="0 20 0 0" Content="Изменить" Width="105" x:Name="EditBt" Click="EditBt_Click"/>
+            <Button Margin="0 20 0 0" Content="Удалить" Width="105" x:Name="DeletBt" Click="DeleteBt_Click"/>
         </StackPanel>
     </Grid>
 </Window>

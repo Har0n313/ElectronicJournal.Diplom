@@ -10,7 +10,7 @@ public interface ISemesterService
 
     Task<Semester> CreateSemester(Semester dto);
 
-    Task<Semester> UpdateSemester(int id, Semester dto);
+    Task<Semester> UpdateSemester(Semester dto);
 
     Task<bool> DeleteSemester(int id);
 }

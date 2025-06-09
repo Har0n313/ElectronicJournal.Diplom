@@ -1,31 +1,33 @@
-﻿using ElectronicJournal.DB;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Collections;
+using ElectronicJournal.Application.Interfaces;
 
-namespace ElectronicJournal.Views
+namespace ElectronicJournal.WPF.Views
 {
 	/// <summary>
 	/// Логика взаимодействия для DisciplineWin.xaml
 	/// </summary>
-	public partial class DisciplineWin : Window
+	public partial class DisciplineWin
 	{
-		ElectJournalEntities journalEntities = new ElectJournalEntities();
-		public DisciplineWin(int idTeacher)
+		private readonly ITeacherService _teacherService;
+		public DisciplineWin(int idTeacher, ITeacherService teacherService)
 		{
+			_teacherService = teacherService;
 			InitializeComponent();
-			dataGrid.ItemsSource = journalEntities.Teacher.Where(m=>m.idTeacher == idTeacher).ToList();
-			dataGrid.IsReadOnly = true;
+			DataGridLoad(idTeacher);
+		}
+
+		private async void DataGridLoad(int idTeacher)
+		{
+			try
+			{
+				var x = await _teacherService.GetTeacherById(idTeacher);
+				dataGrid.ItemsSource = (IEnumerable)x;
+				dataGrid.IsReadOnly = true;
+			}
+			catch (Exception e)
+			{
+				throw; // TODO handle exception
+			}
 		}
 	}
 }

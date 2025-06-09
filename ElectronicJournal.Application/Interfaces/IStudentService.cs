@@ -10,11 +10,11 @@ public interface IStudentService
 
     Task<Student> CreateStudent(Student dto);
 
-    Task<Student> UpdateStudent(int id, Student student);
+    Task<Student> UpdateStudent(Student student);
 
     Task<bool> DeleteStudent(int id);
 
-    Task<ICollection<Grade>> GetStudentGrades(int id);
+    Task<ICollection<Assessment>> GetStudentGrades(int id);
 
     Task<ICollection<Attendance>> GetStudentAttendance(int id);
 

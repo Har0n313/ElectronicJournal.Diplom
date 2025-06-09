@@ -10,7 +10,7 @@ public class Lesson
     public int SubjectAssignmentId { get; set; }
     public SubjectAssignment SubjectAssignment { get; set; }
 
-    public ICollection<Grade> Grades { get; set; }
+    public ICollection<Assessment> Grades { get; set; }
     public ICollection<Attendance> AttendanceRecords { get; set; }
     public ICollection<Homework> Homeworks { get; set; }
 }

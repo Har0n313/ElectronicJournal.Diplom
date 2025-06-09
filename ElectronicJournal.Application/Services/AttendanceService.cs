@@ -21,11 +21,6 @@ public class AttendanceService : IAttendanceService
             throw new ArgumentNullException(nameof(attendance));
         }
 
-        if (string.IsNullOrWhiteSpace(attendance.Status))
-        {
-            throw new ArgumentException("Обязательное поле (Status) не может быть пустым.");
-        }
-
         var student = await _context.Students.FindAsync(attendance.StudentId);
         if (student == null)
         {
@@ -43,17 +38,17 @@ public class AttendanceService : IAttendanceService
         return attendance;
     }
 
-    public async Task<Attendance> UpdateAttendance(int id, Attendance attendance)
+    public async Task<Attendance> UpdateAttendance(Attendance attendance)
     {
         if (attendance == null)
         {
             throw new ArgumentNullException(nameof(attendance));
         }
 
-        var existingAttendance = await _context.Attendances.FindAsync(id);
+        var existingAttendance = await _context.Attendances.FindAsync(attendance.Id);
         if (existingAttendance == null)
         {
-            throw new KeyNotFoundException($"Запись о посещаемости с ID {id} не найдена.");
+            throw new KeyNotFoundException($"Запись о посещаемости с ID {attendance.Id} не найдена.");
         }
 
         var student = await _context.Students.FindAsync(attendance.StudentId);
@@ -68,8 +63,8 @@ public class AttendanceService : IAttendanceService
             throw new KeyNotFoundException($"Занятие с ID {attendance.LessonId} не найдено.");
         }
 
-        existingAttendance.Status = attendance.Status;
-        existingAttendance.Comment = attendance.Comment;
+        existingAttendance.Type = attendance.Type;
+        existingAttendance.Date = attendance.Date;
         existingAttendance.StudentId = attendance.StudentId;
         existingAttendance.LessonId = attendance.LessonId;
 

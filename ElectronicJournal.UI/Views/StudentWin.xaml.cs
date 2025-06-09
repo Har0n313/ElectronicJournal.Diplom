@@ -1,46 +1,54 @@
-﻿using ElectronicJournal.DB;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using ElectronicJournal.WPF;
+using ElectronicJournal.Application.Interfaces;
 
-namespace ElectronicJournal.Views
+namespace ElectronicJournal.WPF.Views
 {
-	/// <summary>
-	/// Логика взаимодействия для StudentWin.xaml
-	/// </summary>
-	public partial class StudentWin : Window
-	{
-		ElectJournalEntities journalEntities = new ElectJournalEntities();
-		string name, surname, cls;
+    /// <summary>
+    /// Логика взаимодействия для StudentWin.xaml
+    /// </summary>
+    public partial class StudentWin : Window
+    {
+        private readonly IStudentService _studentService;
+        private readonly IAssessmentService _assessmentService;
 
-		private void Back_Click(object sender, RoutedEventArgs e)
-		{
-			MainWindow mainWindow = new MainWindow();
-			Close();
-			mainWindow.Show();
+        public StudentWin(int studentId, IAssessmentService assessmentService, IStudentService studentService)
+        {
+            InitializeComponent();
+            _assessmentService = assessmentService;
+            _studentService = studentService;
+
+            LoadStudentInfo(studentId);
+            LoadGrades(studentId);
         }
 
-        public StudentWin(int idStudent)
-		{
-			InitializeComponent();
-			dataGrid.ItemsSource = journalEntities.Assessment.Where(m => m.idStudent == idStudent).ToList();
-			dataGrid.IsReadOnly = true;
-			var x = journalEntities.Student.Where(m=>m.idStudent == idStudent).Single();
-			name = x.nameStudent;
-			surname = x.surnameStudent;
-			cls = x.Class.nameClass;
-			namelb.Content = $"{surname} {name} {cls}";
-		}
-	}
+        private async Task LoadStudentInfo(int studentId)
+        {
+            var student = await _studentService.GetStudentById(studentId);
+
+            if (student == null)
+            {
+                MessageBox.Show("Ошибка: студент не найден.");
+                Close();
+                return;
+            }
+
+            var fullName = $"{student.LastName} {student.FirstName} {student.MiddleName}";
+            var groupName = student.Group?.Name ?? "—";
+
+            namelb.Content = $"{fullName} ({groupName})";
+        }
+
+        private void LoadGrades(int studentId)
+        {
+            var grades = _assessmentService.GetGradesByStudent(studentId);
+            dataGrid.ItemsSource = (IEnumerable)grades;
+            dataGrid.IsReadOnly = true;
+        }
+
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+    }
 }

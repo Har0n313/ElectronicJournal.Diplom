@@ -1,4 +1,6 @@
-﻿namespace ElectronicJournal.Domain.Entites;
+﻿using System.Collections;
+
+namespace ElectronicJournal.Domain.Entites;
 
 public class SubjectAssignment
 {
@@ -16,5 +18,7 @@ public class SubjectAssignment
     public int SemesterId { get; set; }
     public Semester Semester { get; set; }
 
+    public ICollection<Schedule> Schedules { get; set; }
     public ICollection<Lesson> Lessons { get; set; }
+    public ICollection<Subject> Subjects { get; set; }
 }

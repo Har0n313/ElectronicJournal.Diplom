@@ -10,7 +10,9 @@ public interface ISubjectService
 
     Task<Subject> CreateSubject(Subject subject);
 
-    Task<Subject> UpdateSubject(int id, Subject subject);
+    Task<Subject> UpdateSubject(Subject subject);
+    
+    Task<ICollection<Subject>> GetSubjectsByTeacher(int id);
 
     Task<bool> DeleteSubject(int id);
 }

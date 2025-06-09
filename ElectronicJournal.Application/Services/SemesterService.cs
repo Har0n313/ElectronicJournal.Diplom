@@ -70,17 +70,17 @@ public class SemesterService : ISemesterService
         return semester;
     }
 
-    public async Task<Semester> UpdateSemester(int id, Semester semester)
+    public async Task<Semester> UpdateSemester(Semester semester)
     {
         if (semester == null)
         {
             throw new ArgumentNullException(nameof(semester));
         }
 
-        var existingSemester = await _context.Semesters.FindAsync(id);
+        var existingSemester = await _context.Semesters.FindAsync(semester.Id);
         if (existingSemester == null)
         {
-            throw new KeyNotFoundException($"Семестр с ID {id} не найден.");
+            throw new KeyNotFoundException($"Семестр с ID {semester.Id} не найден.");
         }
 
         existingSemester.Number = semester.Number;

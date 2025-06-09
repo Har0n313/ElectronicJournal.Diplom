@@ -18,138 +18,76 @@ public class UserService : IUserService
     public async Task<User> RegisterUser(User user)
     {
         if (user == null)
-        {
             throw new ArgumentNullException(nameof(user));
-        }
 
-        if (string.IsNullOrWhiteSpace(user.Username) || string.IsNullOrWhiteSpace(user.PasswordHash))
-        {
-            throw new ArgumentException("Обязательные поля (Username, PasswordHash) не могут быть пустыми.");
-        }
+        if (string.IsNullOrWhiteSpace(user.UserName) || string.IsNullOrWhiteSpace(user.PasswordHash))
+            throw new ArgumentException("Username and PasswordHash are required.");
 
-        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == user.Username);
-        if (existingUser != null)
-        {
-            throw new InvalidOperationException($"Пользователь с именем {user.Username} уже существует.");
-        }
+        if (await _context.Users.AnyAsync(u => u.UserName == user.UserName))
+            throw new InvalidOperationException($"User with name {user.UserName} already exists.");
 
         if (!Enum.IsDefined(typeof(UserRole), user.Role))
-        {
-            throw new ArgumentException(
-                $"Недопустимое значение роли: {user.Role}. Допустимые значения: Admin (1), Teacher (2), Student (3).");
-        }
-
-        if (user.StudentId.HasValue)
-        {
-            var student = await _context.Students.FindAsync(user.StudentId);
-            if (student == null)
-            {
-                throw new KeyNotFoundException($"Студент с ID {user.StudentId} не найден.");
-            }
-
-            if (user.Role != UserRole.Student)
-            {
-                throw new ArgumentException("Если указан StudentId, роль должна быть Student (3).");
-            }
-        }
-
-        if (user.TeacherId.HasValue)
-        {
-            var teacher = await _context.Teachers.FindAsync(user.TeacherId);
-            if (teacher == null)
-            {
-                throw new KeyNotFoundException($"Преподаватель с ID {user.TeacherId} не найден.");
-            }
-
-            if (user.Role != UserRole.Teacher)
-            {
-                throw new ArgumentException("Если указан TeacherId, роль должна быть Teacher (2).");
-            }
-        }
-
-        if (!user.StudentId.HasValue && !user.TeacherId.HasValue && user.Role != UserRole.Admin)
-        {
-            throw new ArgumentException(
-                "Для роли Admin (1) не требуется StudentId или TeacherId, но для других ролей одно из них должно быть указано.");
-        }
+            throw new ArgumentException("Invalid user role specified.");
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
         return user;
     }
 
-    public async Task<User> Authenticate(string email, string password)
+    public async Task<User> Authenticate(string username, string password)
     {
-        if (email == null || password == null || string.IsNullOrWhiteSpace(email) ||
-            string.IsNullOrWhiteSpace(password))
-        {
-            throw new ArgumentException("Обязательные поля (Username, Password) не могут быть пустыми.");
-        }
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            throw new ArgumentException("Username and password are required.");
 
         var user = await _context.Users
             .Include(u => u.Student)
             .Include(u => u.Teacher)
-            .FirstOrDefaultAsync(u => u.Username == email && u.PasswordHash == password);
+            .FirstOrDefaultAsync(u => u.UserName == username && u.PasswordHash == password);
 
         if (user == null)
-        {
-            throw new InvalidOperationException("Неверное имя пользователя или пароль.");
-        }
+            throw new InvalidOperationException("Invalid credentials.");
 
         return user;
     }
 
-    public async Task ChangePassword(int userId, string newPassword)
+    public Task<bool> DeletUser(int userId)
     {
-        if (string.IsNullOrWhiteSpace(newPassword))
-        {
-            throw new ArgumentException("Новый пароль не может быть пустым.");
-        }
-
-        var user = await _context.Users.FindAsync(userId);
-        if (user == null)
-        {
-            throw new KeyNotFoundException($"Пользователь с ID {userId} не найден.");
-        }
-
-        user.PasswordHash = newPassword;
-        _context.Users.Update(user);
-        await _context.SaveChangesAsync();
+        throw new NotImplementedException();
     }
 
     public async Task<User> GetUserInfo(int id)
     {
-        var query = _context.Users
+        return await _context.Users
             .Include(u => u.Student)
-            .Include(u => u.Teacher);
+            .Include(u => u.Teacher)
+            .FirstOrDefaultAsync(u => u.Id == id)
+            ?? throw new KeyNotFoundException($"User with ID {id} not found.");
+    }
 
-        var user = await query.FirstOrDefaultAsync(u => u.Id == id);
+    public async Task ChangePassword(int userId, string newPassword)
+    {
+        var user = await _context.Users.FindAsync(userId);
         if (user == null)
-        {
-            throw new KeyNotFoundException($"Пользователь с ID {id} не найден.");
-        }
+            throw new KeyNotFoundException($"User with ID {userId} not found.");
 
-        return user;
+        user.PasswordHash = newPassword;
+        await _context.SaveChangesAsync();
+    }
+
+    public Task<User> UpdateUser(User user)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<ICollection<User>> GetUsersByRole(UserRole role)
     {
-        if (role == 0)
-        {
-            throw new ArgumentException("Роль должна быть указана.");
-        }
-
         if (!Enum.IsDefined(typeof(UserRole), role))
-        {
-            throw new ArgumentException(
-                $"Недопустимое значение роли: {role}. Допустимые значения: Admin (1), Teacher (2), Student (3).");
-        }
+            throw new ArgumentException("Invalid user role.");
 
-        var query = _context.Users
-            .Where(u => u.Role == role)
+        return await _context.Users
             .Include(u => u.Student)
-            .Include(u => u.Teacher);
-
-        return await query.ToListAsync();
+            .Include(u => u.Teacher)
+            .Where(u => u.Role == role)
+            .ToListAsync();
     }
 }

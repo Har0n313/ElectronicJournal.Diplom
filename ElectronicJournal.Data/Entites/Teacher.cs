@@ -7,8 +7,9 @@ public class Teacher
     public string LastName { get; set; }
     public string FirstName { get; set; }
     public string? MiddleName { get; set; }
-
-    public string Position { get; set; }
+    
+    public int UserId { get; set; }
+    public User User { get; set; }
 
     public ICollection<SubjectAssignment> SubjectAssignments { get; set; }
 }

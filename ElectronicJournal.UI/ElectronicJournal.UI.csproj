@@ -10,6 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\ElectronicJournal.Application\ElectronicJournal.Application.csproj" />
       <ProjectReference Include="..\ElectronicJournal.Data\ElectronicJournal.Data.csproj" />
     </ItemGroup>
 

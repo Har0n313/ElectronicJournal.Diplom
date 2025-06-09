@@ -63,17 +63,17 @@ public class SubjectService : ISubjectService
         return subject;
     }
 
-    public async Task<Subject> UpdateSubject(int id, Subject subject)
+    public async Task<Subject> UpdateSubject(Subject subject)
     {
         if (subject == null)
         {
             throw new ArgumentNullException(nameof(subject));
         }
 
-        var existingSubject = await _context.Subjects.FindAsync(id);
+        var existingSubject = await _context.Subjects.FindAsync(subject.Id);
         if (existingSubject == null)
         {
-            throw new KeyNotFoundException($"Предмет с ID {id} не найден.");
+            throw new KeyNotFoundException($"Предмет с ID {subject.Id} не найден.");
         }
 
         existingSubject.Name = subject.Name;
@@ -83,6 +83,27 @@ public class SubjectService : ISubjectService
         await _context.SaveChangesAsync();
         return existingSubject;
     }
+
+    public async Task<ICollection<Subject>> GetSubjectsByTeacher(int id)
+    {
+        var subjects = await _context.Subjects
+            .Include(s => s.SubjectAssignments)
+            .ThenInclude(sa => sa.Group)
+            .Include(s => s.SubjectAssignments)
+            .ThenInclude(sa => sa.Teacher)
+            .Include(s => s.SubjectAssignments)
+            .ThenInclude(sa => sa.Semester)
+            .Where(s => s.SubjectAssignments.Any(sa => sa.TeacherId == id))
+            .ToListAsync();
+
+        if (subjects == null || !subjects.Any())
+        {
+            throw new KeyNotFoundException($"Предметы для преподавателя с ID {id} не найдены.");
+        }
+
+        return subjects;
+    }
+
 
     public async Task<bool> DeleteSubject(int id)
     {

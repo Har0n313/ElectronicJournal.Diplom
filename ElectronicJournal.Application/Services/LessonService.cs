@@ -39,17 +39,17 @@ public class LessonService : ILessonService
         return lesson;
     }
 
-    public async Task<Lesson> UpdateLesson(int id, Lesson lesson)
+    public async Task<Lesson> UpdateLesson(Lesson lesson)
     {
         if (lesson == null)
         {
             throw new ArgumentNullException(nameof(lesson));
         }
 
-        var existingLesson = await _context.Lessons.FindAsync(id);
+        var existingLesson = await _context.Lessons.FindAsync(lesson.Id);
         if (existingLesson == null)
         {
-            throw new KeyNotFoundException($"Занятие с ID {id} не найдено.");
+            throw new KeyNotFoundException($"Занятие с ID {lesson.Id} не найдено.");
         }
 
         var subjectAssignment = await _context.SubjectAssignments.FindAsync(lesson.SubjectAssignmentId);

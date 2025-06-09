@@ -10,6 +10,9 @@ public interface IUserService
     Task<User> Authenticate(string email, string password);
 
     Task ChangePassword(int userId, string newPassword);
+    
+    Task<User> UpdateUser(User user);
+    Task<bool> DeletUser(int userId);
 
     Task<User> GetUserInfo(int id);
 

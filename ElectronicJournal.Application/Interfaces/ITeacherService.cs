@@ -10,7 +10,7 @@ public interface ITeacherService
 
     Task<Teacher> CreateTeacher(Teacher dto);
 
-    Task<Teacher> UpdateTeacher(int id, Teacher dto);
+    Task<Teacher> UpdateTeacher(Teacher dto);
 
     Task<bool> DeleteTeacher(int id);
 

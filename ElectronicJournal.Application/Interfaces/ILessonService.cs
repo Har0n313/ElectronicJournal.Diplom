@@ -6,7 +6,7 @@ public interface ILessonService
 {
     Task<Lesson> CreateLesson(Lesson dto);
 
-    Task<Lesson> UpdateLesson(int id, Lesson dto);
+    Task<Lesson> UpdateLesson(Lesson dto);
 
     Task<bool> DeleteLesson(int id);
 

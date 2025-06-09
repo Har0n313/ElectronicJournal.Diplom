@@ -1,12 +1,8 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
-
-namespace ElectronicJournal.WPF;
+﻿namespace ElectronicJournal.WPF;
 
 /// <summary>
 /// Interaction logic for App.xaml
 /// </summary>
-public partial class App : Application
+public partial class App
 {
 }

@@ -37,17 +37,17 @@ public class HomeworkService : IHomeworkService
         return homework;
     }
 
-    public async Task<Homework> UpdateHomework(int id, Homework homework)
+    public async Task<Homework> UpdateHomework(Homework homework)
     {
         if (homework == null)
         {
             throw new ArgumentNullException(nameof(homework));
         }
 
-        var existingHomework = await _context.Homeworks.FindAsync(id);
+        var existingHomework = await _context.Homeworks.FindAsync(homework.Id);
         if (existingHomework == null)
         {
-            throw new KeyNotFoundException($"Homework with ID {id} not found.");
+            throw new KeyNotFoundException($"Homework with ID {homework.Id} not found.");
         }
 
         var lesson = await _context.Lessons.FindAsync(homework.LessonId);

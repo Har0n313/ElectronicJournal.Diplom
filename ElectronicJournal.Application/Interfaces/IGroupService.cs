@@ -1,4 +1,5 @@
-﻿using ElectronicJournal.Domain.Entites;
+﻿using System.Collections;
+using ElectronicJournal.Domain.Entites;
 
 namespace ElectronicJournal.Application.Interfaces;
 
@@ -10,9 +11,11 @@ public interface IGroupService
 
     Task<Group> CreateGroup(Group group);
 
-    Task<Group> UpdateGroup(int id, Group group);
+    Task<Group> UpdateGroup(Group group);
 
     Task<bool> DeleteGroup(int id);
+    
+    Task<Group> GetGroupByName(string name);
 
     Task<ICollection<Student>> GetGroupStudents(int groupId);
 }
