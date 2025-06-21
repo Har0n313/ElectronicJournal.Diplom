@@ -1,0 +1,24 @@
+﻿<Window x:Class="ElectronicJournal.WPF.Views.AddLessonWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:ElectronicJournal.WPF.Views"
+        mc:Ignorable="d"
+        Title="AddLessonWin" Height="250" Width="200">
+    <Grid>
+        <StackPanel Margin="10">
+            <Label Content="Дата урока:"/>
+            <DatePicker x:Name="LessonDatePicker"/>
+
+            <Label Content="Тип занятия:"/>
+            <TextBox x:Name="LessonTypeTextBox"/>
+
+            <Label Content="Тема урока:"/>
+            <TextBox x:Name="TopicTextBox"/>
+
+            <Button Content="Сохранить" Margin="0,10,0,0" Click="SaveLesson_Click"/>
+        </StackPanel>
+
+    </Grid>
+</Window>

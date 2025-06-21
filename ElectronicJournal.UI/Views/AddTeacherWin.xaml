@@ -4,37 +4,61 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="AddTeacherWin" Height="485" Width="800">
-    <Grid>
-        <Label Background="#1E90FF" Content="Окно админа" x:Name="namelb" Foreground="White" FontSize="20" Margin="0,0,0,367" />
-        <Label Background="#1E90FF" Foreground="White" FontSize="20" Margin="0,44,0,367" Content="Список преподавателей" />
-        <DataGrid Margin="0,84,240,165" x:Name="dataGrid" AutoGenerateColumns="False" SelectedCellsChanged="dataGrid_SelectedCellsChanged">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Фамилия" Binding="{Binding Path=srnameTeacher}"/>
-                <DataGridTextColumn Header="Имя" Binding="{Binding Path=nameTeacher}"/>
-                <DataGridTextColumn Header="Отчество" Binding="{Binding Path=middleNameTeacher}"/>
-                <DataGridTextColumn Header="Логин" Binding="{Binding Path=User.login}"/>
-                <DataGridTextColumn Header="Пароль" Binding="{Binding Path=User.pass}"/>
-                <DataGridTextColumn Header="Предмет" Binding="{Binding Path=Discipline.nameDiscipline}"/>
-            </DataGrid.Columns>
-        </DataGrid>
-        <StackPanel Margin="0,304,240,0">
-            <TextBlock Text="Фамилия" Width="120" Margin="2 2 0 0" HorizontalAlignment="Left"/>
-            <TextBox Width="120" HorizontalAlignment="Left" Margin="0 5 0 0" x:Name="surnameTxt"/>
-            <TextBlock Text="Имя" Width="120" Margin="2 2 0 0" HorizontalAlignment="Left"/>
-            <TextBox Width="120" HorizontalAlignment="Left" Margin="0 5 0 0" x:Name="nameTxt"/>
-            <TextBlock Text="Отчество" Width="120" Margin="2 2 0 0" HorizontalAlignment="Left"/>
-            <TextBox Width="120" HorizontalAlignment="Left" Margin="0 5 0 0" x:Name="middleName"/>
-            <TextBlock Text="Логин" Width="120" Margin="150 -220 0 0" HorizontalAlignment="Left" Height="17"/>
-            <TextBox Width="120" HorizontalAlignment="Left" Margin="150 -185 0 0" Height="18" x:Name="loginTxt"/>
-            <TextBlock Text="Пароль" Width="120" Margin="150 -130 0 0" HorizontalAlignment="Left" Height="17"/>
-            <TextBox Width="120" HorizontalAlignment="Left" Margin="150 -95 0 0" Height="18" x:Name="passTxt" />
-            <TextBlock Text="Предмет" Width="120" Margin="150 -55 0 0" HorizontalAlignment="Left" Height="17"/>
-            <TextBox Width="120" HorizontalAlignment="Left" Margin="150 -17 0 0" Height="18" x:Name="DiscTxt"/>
-        </StackPanel>
-        <StackPanel Margin="560,77,0,0">
-            <Button Margin="0 50 0 0" Content="Добавить" Width="105" x:Name="AddBt" Click="AddBt_Click"/>
-            <Button Margin="0 20 0 0" Content="Изменить" Width="105" x:Name="EditBt" Click="EditBt_Click"/>
-        </StackPanel>
+        Title="Преподаватели" Height="500" Width="800">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- Header -->
+            <RowDefinition Height="Auto"/> <!-- Title -->
+            <RowDefinition Height="*"/>    <!-- Main content -->
+            <RowDefinition Height="Auto"/> <!-- Buttons -->
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Text="Окно админа" Background="#1E90FF" Foreground="White" FontSize="20" Padding="10" />
+
+        <!-- Title -->
+        <TextBlock Grid.Row="1" Text="Список преподавателей" FontSize="16" FontWeight="Bold" Margin="0,10,0,5"/>
+
+        <!-- Main content -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- DataGrid -->
+            <DataGrid x:Name="DataGrid" Grid.Column="0" AutoGenerateColumns="False" Margin="0,0,10,0"
+                      SelectedCellsChanged="dataGrid_SelectedCellsChanged" Height="300">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Фамилия" Binding="{Binding Path=LastName}"  Width="*"/>
+                    <DataGridTextColumn Header="Имя" Binding="{Binding Path=FirstName}" Width="*"/>
+                    <DataGridTextColumn Header="Отчество" Binding="{Binding Path=MiddleName}" Width="*"/>
+                    <DataGridTextColumn Header="Логин" Binding="{Binding Path=User.UserName}" Width="*"/>
+                    <DataGridTextColumn Header="Пароль" Binding="{Binding Path=User.PasswordHash}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Input fields -->
+            <StackPanel Grid.Column="1" Margin="0,0,0,10">
+                <TextBlock Text="Фамилия" Margin="0,5,0,0" HorizontalAlignment="Center" />
+                <TextBox x:Name="SurnameTxt" Width="200" />
+
+                <TextBlock Text="Имя" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                <TextBox x:Name="NameTxt" Width="200"/>
+
+                <TextBlock Text="Отчество" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                <TextBox x:Name="MiddleName" Width="200"/>
+
+                <TextBlock Text="Логин" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                <TextBox x:Name="LoginTxt" Width="200"/>
+
+                <TextBlock Text="Пароль" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                <TextBox x:Name="PassTxt" Width="200"/>
+                
+                <Button x:Name="AddBt" Content="Добавить" Width="100" Click="AddBt_Click" Margin="0,15,0,0"/>
+                <Button x:Name="EditBt" Content="Изменить" Width="100" Click="EditBt_Click" Margin="0,15,0,0"/>
+                <Button x:Name="DeleteBt" Content="Удалить" Width="100" Click="DeleteBt_Click" Margin="0,15,0,0"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

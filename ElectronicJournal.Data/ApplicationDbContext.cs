@@ -9,7 +9,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<Group> Groups { get; set; }
     public DbSet<Teacher> Teachers { get; set; }
     public DbSet<Subject> Subjects { get; set; }
-    public DbSet<Semester> Semesters { get; set; }
     public DbSet<SubjectAssignment> SubjectAssignments { get; set; }
     public DbSet<Lesson> Lessons { get; set; }
     public DbSet<Assessment> Assessments { get; set; }
@@ -18,15 +17,22 @@ public class ApplicationDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Schedule> Schedules { get; set; }
 
+    /*public ApplicationDbContext(string connectionString) : this(new DbContextOptionsBuilder<ApplicationDbContext>()
+        .UseNpgsql(connectionString)
+        .Options)
+    {
+    }*/
 
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
     }
 
-    public ApplicationDbContext()
+    /*public ApplicationDbContext() : this(new DbContextOptionsBuilder<ApplicationDbContext>()
+        .UseNpgsql("User ID=postgres;Password=12345;Host=localhost;Port=5432;Database=postgres;")
+        .Options)
     {
-    }
+    }*/
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -58,7 +64,7 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey<Teacher>(t => t.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // --- User.Username уникален ---
+        // --- User.UserName уникален ---
         modelBuilder.Entity<User>()
             .HasIndex(u => u.UserName)
             .IsUnique();
@@ -89,13 +95,6 @@ public class ApplicationDbContext : DbContext
             .HasOne(sa => sa.Subject)
             .WithMany(s => s.SubjectAssignments)
             .HasForeignKey(sa => sa.SubjectId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        // --- Semester ↔ SubjectAssignment (1:M) ---
-        modelBuilder.Entity<SubjectAssignment>()
-            .HasOne(sa => sa.Semester)
-            .WithMany(s => s.SubjectAssignments)
-            .HasForeignKey(sa => sa.SemesterId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // --- SubjectAssignment ↔ Lesson (1:M) ---
@@ -154,6 +153,10 @@ public class ApplicationDbContext : DbContext
             .WithMany(sa => sa.Schedules)
             .HasForeignKey(se => se.SubjectAssignmentId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Assessment>()
+            .HasIndex(a => new { a.LessonId, a.StudentId })
+            .IsUnique();
 
 
         base.OnModelCreating(modelBuilder);

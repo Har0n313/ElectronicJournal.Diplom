@@ -24,7 +24,8 @@ namespace ElectronicJournal.WPF.Views
         {
             try
             {
-                DataGrid.ItemsSource = await _subjectService.GetAllSubjects();
+                var subjects = await _subjectService.GetAllSubjects();
+                DataGrid.ItemsSource = subjects.OrderBy(s => s.Name);
             }
             catch (Exception e)
             {

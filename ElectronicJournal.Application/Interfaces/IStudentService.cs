@@ -17,6 +17,4 @@ public interface IStudentService
     Task<ICollection<Assessment>> GetStudentGrades(int id);
 
     Task<ICollection<Attendance>> GetStudentAttendance(int id);
-
-    Task<Semester> GetStudentCurrentSemester(int id);
 }

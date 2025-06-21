@@ -9,10 +9,14 @@ public interface ILessonService
     Task<Lesson> UpdateLesson(Lesson dto);
 
     Task<bool> DeleteLesson(int id);
+    
+    Task<Lesson> GetLessonById(int id);
 
     Task<ICollection<Lesson>> GetLessonsBySubjectAssignment(int subjectAssignmentId);
 
-    Task<ICollection<Lesson>> GetLessonsByGroupAndDate(int groupId, DateTime date);
+    Task<Lesson?> GetLessonsByGroupSubjectAndDate(int groupId, int subjectId, DateTime date);
 
     Task<ICollection<Lesson>> GetLessonsByTeacherAndDate(int teacherId, DateTime date);
+
+    Task<IEnumerable<Lesson>> GetLessonsBySubjectAndGroup(int groupId, int subjectId);
 }

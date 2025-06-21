@@ -8,38 +8,42 @@ namespace ElectronicJournal.Application.Services;
 
 public class UserService : IUserService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IDbContextFactory<ApplicationDbContext> _context;
 
-    public UserService(ApplicationDbContext context)
+    public UserService(IDbContextFactory<ApplicationDbContext> context)
     {
         _context = context;
     }
 
     public async Task<User> RegisterUser(User user)
     {
+        await using var context = await _context.CreateDbContextAsync();
+
         if (user == null)
             throw new ArgumentNullException(nameof(user));
 
         if (string.IsNullOrWhiteSpace(user.UserName) || string.IsNullOrWhiteSpace(user.PasswordHash))
             throw new ArgumentException("Username and PasswordHash are required.");
 
-        if (await _context.Users.AnyAsync(u => u.UserName == user.UserName))
-            throw new InvalidOperationException($"User with name {user.UserName} already exists.");
+        if (await context.Users.AnyAsync(u => u.UserName == user.UserName))
+            throw new InvalidOperationException($"Пользователь с логином {user.UserName} существует.");
 
         if (!Enum.IsDefined(typeof(UserRole), user.Role))
             throw new ArgumentException("Invalid user role specified.");
 
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
         return user;
     }
 
     public async Task<User> Authenticate(string username, string password)
     {
+        await using var context = await _context.CreateDbContextAsync();
+
         if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             throw new ArgumentException("Username and password are required.");
 
-        var user = await _context.Users
+        var user = await context.Users
             .Include(u => u.Student)
             .Include(u => u.Teacher)
             .FirstOrDefaultAsync(u => u.UserName == username && u.PasswordHash == password);
@@ -50,41 +54,64 @@ public class UserService : IUserService
         return user;
     }
 
-    public Task<bool> DeletUser(int userId)
+    public async Task<bool> DeletUser(int id)
     {
-        throw new NotImplementedException();
+        await using var context = await _context.CreateDbContextAsync();
+
+        var user = await context.Users.FindAsync(id);
+        if (user == null) return false;
+
+        context.Users.Remove(user);
+        await context.SaveChangesAsync();
+        return true;
     }
 
     public async Task<User> GetUserInfo(int id)
     {
-        return await _context.Users
-            .Include(u => u.Student)
-            .Include(u => u.Teacher)
-            .FirstOrDefaultAsync(u => u.Id == id)
-            ?? throw new KeyNotFoundException($"User with ID {id} not found.");
+        await using var context = await _context.CreateDbContextAsync();
+
+        return await context.Users
+                   .Include(u => u.Student)
+                   .Include(u => u.Teacher)
+                   .FirstOrDefaultAsync(u => u.Id == id)
+               ?? throw new KeyNotFoundException($"User with ID {id} not found.");
     }
 
     public async Task ChangePassword(int userId, string newPassword)
     {
-        var user = await _context.Users.FindAsync(userId);
+        await using var context = await _context.CreateDbContextAsync();
+
+        var user = await context.Users.FindAsync(userId);
         if (user == null)
             throw new KeyNotFoundException($"User with ID {userId} not found.");
 
         user.PasswordHash = newPassword;
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
 
-    public Task<User> UpdateUser(User user)
+    public async Task<User> UpdateUser(User updated)
     {
-        throw new NotImplementedException();
+        await using var context = await _context.CreateDbContextAsync();
+
+        var user = await context.Users.FindAsync(updated.Id);
+        if (user == null)
+            throw new KeyNotFoundException();
+
+        user.UserName = updated.UserName;
+        user.PasswordHash = updated.PasswordHash;
+
+        await context.SaveChangesAsync();
+        return user;
     }
 
     public async Task<ICollection<User>> GetUsersByRole(UserRole role)
     {
+        await using var context = await _context.CreateDbContextAsync();
+
         if (!Enum.IsDefined(typeof(UserRole), role))
             throw new ArgumentException("Invalid user role.");
 
-        return await _context.Users
+        return await context.Users
             .Include(u => u.Student)
             .Include(u => u.Teacher)
             .Where(u => u.Role == role)

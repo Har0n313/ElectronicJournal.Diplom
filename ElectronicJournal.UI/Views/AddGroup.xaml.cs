@@ -25,7 +25,8 @@ public partial class AddGroup
     {
         try
         {
-            dataGrid.ItemsSource = await _groupService.GetAllGroups();
+            var groupps = await _groupService.GetAllAsync();
+            dataGrid.ItemsSource = groupps.OrderBy(g => g.Name);
         }
         catch (Exception ex)
         {
@@ -97,11 +98,11 @@ public partial class AddGroup
     {
         if (_selectedGroup == null)
         {
-            MessageBox.Show("Выберите дисциплину для удаления", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("Выберите группу для удаления", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
-        var confirm = MessageBox.Show("Вы уверены, что хотите удалить дисциплину?", "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        var confirm = MessageBox.Show("Вы уверены, что хотите удалить группу?", "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
         if (confirm != MessageBoxResult.Yes) return;
 
         try

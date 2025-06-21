@@ -12,5 +12,5 @@ public interface IScheduleService
     Task UpdateSchedule(Schedule entry);
     Task DeleteSchedule(int entryId);
 
-    Task<IEnumerable<TimeSpan>> GetPairTimes(int pairNumber);
+    Task<IEnumerable<string>> GetPairTimes(int pairNumber);
 }

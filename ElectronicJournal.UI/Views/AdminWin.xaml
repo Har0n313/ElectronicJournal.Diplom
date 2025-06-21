@@ -202,14 +202,17 @@
                 </StackPanel>
 
                 <!-- Правая панель -->
-                <StackPanel Grid.Column="1" Margin="20,0,0,0">
+                <StackPanel Grid.Column="1" Margin="10,0,0,0">
                     <TextBlock Margin="0,0,0,10" Text="Введите группу" TextAlignment="Center"/>
-                    <TextBox x:Name="klassTxt" Width="220"/>
+                    <ComboBox Width="220" HorizontalAlignment="Center" Margin="0 10 0 0" Height="20" 
+                              x:Name="GroupComboBox" DisplayMemberPath="Name" SelectedValuePath="Id"/>
+                    
                     <Button Margin="0,10,0,0" Content="Получить расписание" x:Name="ListSheduleBt" Width="220" Click="ListSheduleBt_Click"/>
                     <Button Margin="0,20,0,0" Content="Добавить студента" x:Name="AddStudentBt" Width="220" Click="AddStudentBt_Click"/>
                     <Button Margin="0,10,0,0" Content="Добавить преподавателя" x:Name="AddTeacherBt" Width="220" Click="AddTeacherBt_Click"/>
                     <Button Margin="0,10,0,0" Content="Добавлять/Редактировать группы" x:Name="AddGroupBt" Width="220" Click="AddGroupBt_Click"/>
                     <Button Margin="0,10,0,0" Content="Добавлять/Редактировать дисциплины" x:Name="AddDiscBt" Width="220" Click="AddDiscBt_Click"/>
+                    <Button Margin="0,10,0,0" Content="Назначить преподавателя" x:Name="AddAssignmentBt" Width="220" Click="AddAssignmentBt_Click"/>
                     <Button Margin="0,10,0,0" Content="Сделать расписание" x:Name="SheduleBt" Width="220" Click="SheduleBt_Click"/>
                     <Button Margin="0,10,0,0" Content="Назад" x:Name="Back" Width="220" Click="Back_Click"/>
                 </StackPanel>

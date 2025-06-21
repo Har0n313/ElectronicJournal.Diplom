@@ -6,8 +6,8 @@ public class Schedule
 
     public DayOfWeek Day { get; set; } 
     public int PairNumber { get; set; }
-    public TimeSpan StartTime { get; set; }
-    public TimeSpan EndTime { get; set; }
+    public string StartTime { get; set; }
+    public string EndTime { get; set; }
     public string Room { get; set; }
 
     public int SubjectAssignmentId { get; set; }

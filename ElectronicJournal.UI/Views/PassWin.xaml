@@ -17,7 +17,7 @@
             </DataGrid>
         </StackPanel>
         <StackPanel Margin="610,0,0,0">
-            <TextBlock Margin="0 90 0 0"  Text="Посещаимость(ПР,НБ,УВ,ОТ)" Width="160"/>
+            <TextBlock Margin="0 90 0 0"  Text="Посещаемость(ПР,НБ,УВ,ОТ)" Width="160"/>
             <ComboBox x:Name="absenceTypeComboBox" Margin="0 3 0 0" Width="155" DisplayMemberPath="Name"/>
             <TextBlock  Margin="0 20 0 0" Text="Введите дату" Width="160"/>
             <TextBox Margin="0 2 0 0" Width="155" x:Name="dateTxt"/>

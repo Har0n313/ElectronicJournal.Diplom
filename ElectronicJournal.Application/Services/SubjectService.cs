@@ -7,35 +7,37 @@ namespace ElectronicJournal.Application.Services;
 
 public class SubjectService : ISubjectService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IDbContextFactory<ApplicationDbContext> _context;
 
-    public SubjectService(ApplicationDbContext context)
+    public SubjectService(IDbContextFactory<ApplicationDbContext> context)
     {
         _context = context;
     }
 
     public async Task<ICollection<Subject>> GetAllSubjects()
     {
-        var query = _context.Subjects
+        await using var context = await _context.CreateDbContextAsync();
+
+        var query = context.Subjects
             .Include(s => s.SubjectAssignments)
             .ThenInclude(sa => sa.Group)
             .Include(s => s.SubjectAssignments)
             .ThenInclude(sa => sa.Teacher)
-            .Include(s => s.SubjectAssignments)
-            .ThenInclude(sa => sa.Semester);
+            .Include(s => s.SubjectAssignments);
 
         return await query.ToListAsync();
     }
 
     public async Task<Subject> GetSubjectById(int id)
     {
-        var query = _context.Subjects
+        await using var context = await _context.CreateDbContextAsync();
+
+        var query = context.Subjects
             .Include(s => s.SubjectAssignments)
             .ThenInclude(sa => sa.Group)
             .Include(s => s.SubjectAssignments)
             .ThenInclude(sa => sa.Teacher)
-            .Include(s => s.SubjectAssignments)
-            .ThenInclude(sa => sa.Semester);
+            .Include(s => s.SubjectAssignments);
 
         var subject = await query.FirstOrDefaultAsync(s => s.Id == id);
         if (subject == null)
@@ -48,6 +50,8 @@ public class SubjectService : ISubjectService
 
     public async Task<Subject> CreateSubject(Subject subject)
     {
+        await using var context = await _context.CreateDbContextAsync();
+
         if (subject == null)
         {
             throw new ArgumentNullException(nameof(subject));
@@ -58,19 +62,21 @@ public class SubjectService : ISubjectService
             throw new ArgumentException("Обязательные поля (Name, Code) не могут быть пустыми.");
         }
 
-        _context.Subjects.Add(subject);
-        await _context.SaveChangesAsync();
+        context.Subjects.Add(subject);
+        await context.SaveChangesAsync();
         return subject;
     }
 
     public async Task<Subject> UpdateSubject(Subject subject)
     {
+        await using var context = await _context.CreateDbContextAsync();
+
         if (subject == null)
         {
             throw new ArgumentNullException(nameof(subject));
         }
 
-        var existingSubject = await _context.Subjects.FindAsync(subject.Id);
+        var existingSubject = await context.Subjects.FindAsync(subject.Id);
         if (existingSubject == null)
         {
             throw new KeyNotFoundException($"Предмет с ID {subject.Id} не найден.");
@@ -79,20 +85,21 @@ public class SubjectService : ISubjectService
         existingSubject.Name = subject.Name;
         existingSubject.Code = subject.Code;
 
-        _context.Subjects.Update(existingSubject);
-        await _context.SaveChangesAsync();
+        context.Subjects.Update(existingSubject);
+        await context.SaveChangesAsync();
         return existingSubject;
     }
 
     public async Task<ICollection<Subject>> GetSubjectsByTeacher(int id)
     {
-        var subjects = await _context.Subjects
+        await using var context = await _context.CreateDbContextAsync();
+
+        var subjects = await context.Subjects
             .Include(s => s.SubjectAssignments)
             .ThenInclude(sa => sa.Group)
             .Include(s => s.SubjectAssignments)
             .ThenInclude(sa => sa.Teacher)
             .Include(s => s.SubjectAssignments)
-            .ThenInclude(sa => sa.Semester)
             .Where(s => s.SubjectAssignments.Any(sa => sa.TeacherId == id))
             .ToListAsync();
 
@@ -107,14 +114,16 @@ public class SubjectService : ISubjectService
 
     public async Task<bool> DeleteSubject(int id)
     {
-        var subject = await _context.Subjects.FindAsync(id);
+        await using var context = await _context.CreateDbContextAsync();
+
+        var subject = await context.Subjects.FindAsync(id);
         if (subject == null)
         {
             throw new KeyNotFoundException($"Предмет с ID {id} не найден.");
         }
 
-        _context.Subjects.Remove(subject);
-        await _context.SaveChangesAsync();
+        context.Subjects.Remove(subject);
+        await context.SaveChangesAsync();
         return true;
     }
 }

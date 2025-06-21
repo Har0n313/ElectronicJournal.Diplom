@@ -7,15 +7,17 @@ namespace ElectronicJournal.Application.Services;
 
 public class HomeworkService : IHomeworkService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IDbContextFactory<ApplicationDbContext> _context;
 
-    public HomeworkService(ApplicationDbContext context)
+    public HomeworkService(IDbContextFactory<ApplicationDbContext> context)
     {
         _context = context;
     }
 
     public async Task<Homework> CreateHomework(Homework homework)
     {
+        await using var context = await _context.CreateDbContextAsync();
+
         if (homework == null)
         {
             throw new ArgumentNullException(nameof(homework));
@@ -26,31 +28,33 @@ public class HomeworkService : IHomeworkService
             throw new ArgumentException("Required fields (Description, DueDate) must not be empty or invalid.");
         }
 
-        var lesson = await _context.Lessons.FindAsync(homework.LessonId);
+        var lesson = await context.Lessons.FindAsync(homework.LessonId);
         if (lesson == null)
         {
             throw new KeyNotFoundException($"Lesson with ID {homework.LessonId} not found.");
         }
 
-        _context.Homeworks.Add(homework);
-        await _context.SaveChangesAsync();
+        context.Homeworks.Add(homework);
+        await context.SaveChangesAsync();
         return homework;
     }
 
     public async Task<Homework> UpdateHomework(Homework homework)
     {
+        await using var context = await _context.CreateDbContextAsync();
+
         if (homework == null)
         {
             throw new ArgumentNullException(nameof(homework));
         }
 
-        var existingHomework = await _context.Homeworks.FindAsync(homework.Id);
+        var existingHomework = await context.Homeworks.FindAsync(homework.Id);
         if (existingHomework == null)
         {
             throw new KeyNotFoundException($"Homework with ID {homework.Id} not found.");
         }
 
-        var lesson = await _context.Lessons.FindAsync(homework.LessonId);
+        var lesson = await context.Lessons.FindAsync(homework.LessonId);
         if (lesson == null)
         {
             throw new KeyNotFoundException($"Lesson with ID {homework.LessonId} not found.");
@@ -60,33 +64,37 @@ public class HomeworkService : IHomeworkService
         existingHomework.DueDate = homework.DueDate;
         existingHomework.LessonId = homework.LessonId;
 
-        _context.Homeworks.Update(existingHomework);
-        await _context.SaveChangesAsync();
+        context.Homeworks.Update(existingHomework);
+        await context.SaveChangesAsync();
         return existingHomework;
     }
 
     public async Task<bool> DeleteHomework(int id)
     {
-        var homework = await _context.Homeworks.FindAsync(id);
+        await using var context = await _context.CreateDbContextAsync();
+
+        var homework = await context.Homeworks.FindAsync(id);
         if (homework == null)
         {
             throw new KeyNotFoundException($"Homework with ID {id} not found.");
         }
 
-        _context.Homeworks.Remove(homework);
-        await _context.SaveChangesAsync();
+        context.Homeworks.Remove(homework);
+        await context.SaveChangesAsync();
         return true;
     }
 
     public async Task<ICollection<Homework>> GetHomeworkByLesson(int lessonId)
     {
-        var lesson = await _context.Lessons.FindAsync(lessonId);
+        await using var context = await _context.CreateDbContextAsync();
+
+        var lesson = await context.Lessons.FindAsync(lessonId);
         if (lesson == null)
         {
             throw new KeyNotFoundException($"Lesson with ID {lessonId} not found.");
         }
 
-        return await _context.Homeworks
+        return await context.Homeworks
             .Where(h => h.LessonId == lessonId)
             .Include(h => h.Lesson)
             .ThenInclude(l => l.SubjectAssignment)
@@ -96,13 +104,15 @@ public class HomeworkService : IHomeworkService
 
     public async Task<ICollection<Homework>> GetHomeworkByGroup(int groupId)
     {
-        var group = await _context.Groups.FindAsync(groupId);
+        await using var context = await _context.CreateDbContextAsync();
+
+        var group = await context.Groups.FindAsync(groupId);
         if (group == null)
         {
             throw new KeyNotFoundException($"Group with ID {groupId} not found.");
         }
 
-        return await _context.Homeworks
+        return await context.Homeworks
             .Where(h => h.Lesson.SubjectAssignment.GroupId == groupId)
             .Include(h => h.Lesson)
             .ThenInclude(l => l.SubjectAssignment)
@@ -113,7 +123,9 @@ public class HomeworkService : IHomeworkService
 
     public async Task<ICollection<Homework>> GetHomeworkByStudent(int studentId)
     {
-        var student = await _context.Students
+        await using var context = await _context.CreateDbContextAsync();
+
+        var student = await context.Students
             .Include(s => s.Group)
             .FirstOrDefaultAsync(s => s.Id == studentId);
         if (student == null)
@@ -121,7 +133,7 @@ public class HomeworkService : IHomeworkService
             throw new KeyNotFoundException($"Student with ID {studentId} not found.");
         }
 
-        return await _context.Homeworks
+        return await context.Homeworks
             .Where(h => h.Lesson.SubjectAssignment.GroupId == student.GroupId)
             .Include(h => h.Lesson)
             .ThenInclude(l => l.SubjectAssignment)

@@ -31,8 +31,8 @@ namespace ElectronicJournal.WPF.Views
         {
             try
             {
-                var students = await _studentService.GetStudentsByClassName(kls);
-                dataGrid.ItemsSource = students;
+                //var students = await _studentService.GetStudentsByClassName(kls);
+                //dataGrid.ItemsSource = students;
             }
             catch (Exception ex)
             {
@@ -101,8 +101,8 @@ namespace ElectronicJournal.WPF.Views
 
         private void listBt_Click(object sender, RoutedEventArgs e)
         {
-            var listPass = new ListPass(IdDisc, _attendanceService);
-            listPass.ShowDialog();
+            //var listPass = new ListPass(IdDisc, _attendanceService);
+            //listPass.ShowDialog();
         }
     }
 }

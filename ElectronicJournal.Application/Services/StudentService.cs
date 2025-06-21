@@ -7,35 +7,42 @@ namespace ElectronicJournal.Application.Services;
 
 public class StudentService : IStudentService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IDbContextFactory<ApplicationDbContext> _context;
 
-    public StudentService(ApplicationDbContext context)
+    public StudentService(IDbContextFactory<ApplicationDbContext> context)
     {
         _context = context;
     }
 
     public async Task<Student> CreateStudent(Student student)
     {
+        await using var context = await _context.CreateDbContextAsync();
+
         if (student == null)
             throw new ArgumentNullException();
 
-        _context.Students.Add(student);
-        await _context.SaveChangesAsync();
+        context.Students.Add(student);
+        await context.SaveChangesAsync();
         return student;
     }
 
     public async Task<Student> GetStudentById(int id)
     {
-        return await _context.Students.FindAsync(id) ?? throw new InvalidOperationException();
-        /*.Include(s => s.User)
-        .Include(s => s.Group)
-        .FirstOrDefaultAsync(s => s.Id == id)
-        ?? throw new KeyNotFoundException();*/
+        await using var context = await _context.CreateDbContextAsync();
+
+        var student = await context.Students
+            .Include(s => s.User)
+            .Include(s => s.Group)
+            .FirstOrDefaultAsync(s => s.Id == id);
+
+        return student ?? throw new KeyNotFoundException($"Студент с ID {id} не найден.");
     }
 
     public async Task<ICollection<Student>> GetAllStudents()
     {
-        return await _context.Students
+        await using var context = await _context.CreateDbContextAsync();
+
+        return await context.Students
             .Include(s => s.User)
             .Include(s => s.Group)
             .ToListAsync();
@@ -43,7 +50,9 @@ public class StudentService : IStudentService
 
     public async Task<Student> UpdateStudent(Student students)
     {
-        var student = await _context.Students.FindAsync(students.Id);
+        await using var context = await _context.CreateDbContextAsync();
+
+        var student = await context.Students.FindAsync(students.Id);
         if (student == null)
             throw new KeyNotFoundException();
 
@@ -52,29 +61,33 @@ public class StudentService : IStudentService
         student.MiddleName = students.MiddleName;
         student.GroupId = students.GroupId;
 
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
         return student;
     }
 
     public async Task<bool> DeleteStudent(int id)
     {
-        var student = await _context.Students.FindAsync(id);
+        await using var context = await _context.CreateDbContextAsync();
+
+        var student = await context.Students.FindAsync(id);
         if (student == null) return false;
 
-        _context.Students.Remove(student);
-        await _context.SaveChangesAsync();
+        context.Students.Remove(student);
+        await context.SaveChangesAsync();
         return true;
     }
 
     public async Task<ICollection<Assessment>> GetStudentGrades(int id)
     {
-        var student = await _context.Students.FindAsync(id);
+        await using var context = await _context.CreateDbContextAsync();
+
+        var student = await context.Students.FindAsync(id);
         if (student == null)
         {
             throw new KeyNotFoundException($"Student with ID {id} not found.");
         }
 
-        return await _context.Assessments
+        return await context.Assessments
             .Where(g => g.StudentId == id)
             .Include(g => g.Lesson)
             .ThenInclude(l => l.SubjectAssignment)
@@ -84,33 +97,19 @@ public class StudentService : IStudentService
 
     public async Task<ICollection<Attendance>> GetStudentAttendance(int id)
     {
-        var student = await _context.Students.FindAsync(id);
+        await using var context = await _context.CreateDbContextAsync();
+
+        var student = await context.Students.FindAsync(id);
         if (student == null)
         {
             throw new KeyNotFoundException($"Student with ID {id} not found.");
         }
 
-        return await _context.Attendances
+        return await context.Attendances
             .Where(a => a.StudentId == id)
             .Include(a => a.Lesson)
             .ThenInclude(l => l.SubjectAssignment)
             .ThenInclude(sa => sa.Subject)
             .ToListAsync();
-    }
-
-    public async Task<Semester> GetStudentCurrentSemester(int id)
-    {
-        var student = await _context.Students
-            .Include(s => s.Group)
-            .FirstOrDefaultAsync(s => s.Id == id);
-        if (student == null)
-        {
-            throw new KeyNotFoundException($"Student with ID {id} not found.");
-        }
-
-        var currentDate = DateTime.UtcNow;
-        return await _context.Semesters
-            .Where(s => s.StartDate <= currentDate && s.EndDate >= currentDate)
-            .FirstOrDefaultAsync();
     }
 }

@@ -39,10 +39,8 @@ namespace ElectronicJournal.WPF.Views
                 var selected = dataGrid.SelectedItem as Assessment;
                 if (selected == null) return;
                 
-                selected.GradeValue = int.Parse(markTxt.Text);
+                selected.MarkValue = int.Parse(markTxt.Text);
                 selected.Type = GetSelectedAssessmentType();
-                selected.DateCreated = datePicker.SelectedDate ?? DateTime.Now;
-
                 await _assessmentService.UpdateAssessments(selected);
                 Update();
             }
@@ -54,9 +52,9 @@ namespace ElectronicJournal.WPF.Views
 
         private void BackBt_Click(object sender, RoutedEventArgs e)
         {
-            var teacherWin = new TeacherWin(IdTeacher, IdDisc, );
+            //var teacherWin = new TeacherWin(IdTeacher, IdDisc, );
             Close();
-            teacherWin.Show();
+            //teacherWin.Show();
         }
 
         private void dataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
@@ -66,8 +64,7 @@ namespace ElectronicJournal.WPF.Views
                 var selected = dataGrid.SelectedItem as Assessment;
                 if (selected == null) return;
 
-                markTxt.Text = selected.GradeValue.ToString();
-                datePicker.SelectedDate = selected.DateCreated;
+                markTxt.Text = selected.MarkValue.ToString();
                 typeComboBox.SelectedValue = selected.Type;
             }
             catch
@@ -88,12 +85,11 @@ namespace ElectronicJournal.WPF.Views
                 {
                     StudentId = selected.StudentId,
                     LessonId = IdDisc,
-                    GradeValue = int.Parse(markTxt.Text),
-                    DateCreated = GetSelectedDate(),
+                    MarkValue = int.Parse(markTxt.Text),
                     Type = GetSelectedAssessmentType(),
                 };
 
-                await _assessmentService.CreateGrade(newAssessment);
+                await _assessmentService.CreateAssessment(newAssessment);
                 Update();
             }
             catch

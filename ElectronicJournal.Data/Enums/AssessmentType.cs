@@ -6,6 +6,8 @@ public enum AssessmentType
 {
     [Display(Name = "Домашнее задание")] Homework,
 
+    [Display(Name = "Работа в классе")] Classwork,
+
     [Display(Name = "Контрольная работа")] ControlWork,
 
     [Display(Name = "Практическая работа")]

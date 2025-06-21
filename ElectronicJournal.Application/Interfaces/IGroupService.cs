@@ -5,7 +5,7 @@ namespace ElectronicJournal.Application.Interfaces;
 
 public interface IGroupService
 {
-    Task<ICollection<Group>> GetAllGroups();
+    Task<ICollection<Group>> GetAllAsync();
 
     Task<Group> GetGroupById(int id);
 

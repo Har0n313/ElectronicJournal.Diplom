@@ -1,0 +1,20 @@
+﻿<Window x:Class="ElectronicJournal.WPF.Views.AddGradeWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:ElectronicJournal.WPF.Views"
+        mc:Ignorable="d"
+        Title="AddGradeWin" Height="220" Width="200">
+    <Grid>
+        <StackPanel Margin="10">
+            <Label Content="Оценка:"/>
+            <TextBox x:Name="GradeTextBox"/>
+
+            <Label Content="Тип:"/>
+            <ComboBox x:Name="AssessmentTypeComboBox"/>
+
+            <Button Content="Сохранить" Margin="0,10,0,0" Click="SaveGrade_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

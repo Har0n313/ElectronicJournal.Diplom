@@ -7,21 +7,26 @@ namespace ElectronicJournal.Application.Services;
 
 public class GroupService : IGroupService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IDbContextFactory<ApplicationDbContext> _context;
 
-    public GroupService(ApplicationDbContext context)
+    public GroupService(IDbContextFactory<ApplicationDbContext> context)
     {
         _context = context;
     }
 
-    public async Task<ICollection<Group>> GetAllGroups()
+
+    public async Task<ICollection<Group>> GetAllAsync()
     {
-        return await _context.Groups.ToListAsync();
+        await using var context = await _context.CreateDbContextAsync();
+
+        return await context.Groups.ToListAsync();
     }
 
     public async Task<Group> GetGroupById(int id)
     {
-        var group = await _context.Groups.FirstOrDefaultAsync(g => g.Id == id);
+        await using var context = await _context.CreateDbContextAsync();
+
+        var group = await context.Groups.FirstOrDefaultAsync(g => g.Id == id);
         if (group == null)
         {
             throw new KeyNotFoundException($"Group with ID {id} not found.");
@@ -30,8 +35,10 @@ public class GroupService : IGroupService
         return group;
     }
 
-    public Task<Group> CreateGroup(Group group)
-    {
+    public async Task<Group> CreateGroup(Group group)
+    { 
+        await using var context = await _context.CreateDbContextAsync();
+        
         if (group == null)
         {
             throw new ArgumentNullException(nameof(group));
@@ -44,19 +51,21 @@ public class GroupService : IGroupService
                 "Required fields (Name, SpecialtyCode, AdmissionYear) must not be empty or invalid.");
         }
 
-        _context.Groups.Add(group);
-        _context.SaveChanges();
-        return Task.FromResult(group);
+        await context.Groups.AddAsync(group);
+        await context.SaveChangesAsync();
+        return group;
     }
 
     public async Task<Group> UpdateGroup(Group group)
     {
+        await using var context = await _context.CreateDbContextAsync();
+
         if (group == null)
         {
             throw new ArgumentNullException(nameof(group));
         }
 
-        var existingGroupe = await _context.Groups.FindAsync(group.Id);
+        var existingGroupe = await context.Groups.FindAsync(group.Id);
         if (existingGroupe == null)
         {
             throw new KeyNotFoundException($"Grade with ID {group.Id} not found.");
@@ -67,38 +76,45 @@ public class GroupService : IGroupService
         existingGroupe.SpecialtyCode = group.SpecialtyCode;
         existingGroupe.AdmissionYear = group.AdmissionYear;
 
-        _context.Groups.Update(existingGroupe);
-        await _context.SaveChangesAsync();
+        context.Groups.Update(existingGroupe);
+        await context.SaveChangesAsync();
         return existingGroupe;
     }
 
     public async Task<bool> DeleteGroup(int id)
     {
-        var group = await _context.Groups.FindAsync(id);
+        await using var context = await _context.CreateDbContextAsync();
+
+        var group = await context.Groups.FindAsync(id);
         if (group == null)
         {
             throw new KeyNotFoundException($"Group with ID {id} not found.");
         }
 
-        _context.Groups.Remove(group);
-        await _context.SaveChangesAsync();
+        context.Groups.Remove(group);
+        await context.SaveChangesAsync();
         return true;
     }
 
     public async Task<Group> GetGroupByName(string name)
     {
-        return await _context.Groups.FirstOrDefaultAsync(g => g.Name == name) ?? throw new InvalidOperationException();
+        await using var context = await _context.CreateDbContextAsync();
+
+        return await context.Groups.FirstOrDefaultAsync(g => g.Name == name) ?? throw new InvalidOperationException();
     }
+
 
     public async Task<ICollection<Student>> GetGroupStudents(int groupId)
     {
-        var group = await _context.Groups.FindAsync(groupId);
+        await using var context = await _context.CreateDbContextAsync();
+
+        var group = await context.Groups.FindAsync(groupId);
         if (group == null)
         {
             throw new KeyNotFoundException($"Group with ID {groupId} not found.");
         }
 
-        return await _context.Students
+        return await context.Students
             .Where(s => s.GroupId == groupId)
             .ToListAsync();
     }

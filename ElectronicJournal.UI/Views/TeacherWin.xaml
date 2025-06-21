@@ -12,20 +12,23 @@
             <TabItem Header="Оценки">
                 <Grid>
                     <StackPanel Orientation="Horizontal" Margin="10">
-                        <TextBlock Text="Класс:" />
-                        <ComboBox Width="150" Margin="5,0" x:Name="classComboBox" VerticalAlignment="Top"/>
+                        <TextBlock Text="Группа:" />
+                        <ComboBox Width="150" Margin="5,0" x:Name="GroupComboBox" VerticalAlignment="Top"/>
                         <TextBlock Text="Предмет:" />
-                        <ComboBox Width="150" Margin="5,0" x:Name="subjectComboBox" VerticalAlignment="Top" />
+                        <ComboBox Width="150" Margin="5,0" x:Name="SubjectComboBox" VerticalAlignment="Top" />
                         <Button Content="Обновить" Width="100" Click="RefreshGrades_Click" VerticalAlignment="Top" />
+                        <Button Content="Очистить" Width="100" Click="ClearFiltersButton_Click" VerticalAlignment="Top" Margin="5,0"/>
+                        <Button Content="Добавить урок" Width="120" Margin="5,0" Click="AddLessonButton_Click" VerticalAlignment="Top" />
+                        <Button Content="Добавить оценку" Width="120" Margin="5,0" Click="AddGradeButton_Click" VerticalAlignment="Top"/>
+
+
                     </StackPanel>
-                    <DataGrid x:Name="gradesDataGrid" Margin="10,50,10,10" AutoGenerateColumns="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Фамилия" Binding="{Binding Student.Surname}"/>
-                            <DataGridTextColumn Header="Имя" Binding="{Binding Student.Name}"/>
-                            <DataGridTextColumn Header="Оценка" Binding="{Binding Mark}"/>
-                            <DataGridTextColumn Header="Тип работы" Binding="{Binding WorkType.Name}"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
+                    <DataGrid x:Name="GradesDataGrid"
+                              Margin="10,50,10,10"
+                              AutoGenerateColumns="False"
+                              HeadersVisibility="Column"
+                              CanUserAddRows="False"
+                              IsReadOnly="True"/>
                 </Grid>
             </TabItem>
 
@@ -33,7 +36,7 @@
             <TabItem Header="Посещаемость">
                 <Grid>
                     <StackPanel Orientation="Horizontal" Margin="10">
-                        <TextBlock Text="Класс:" />
+                        <TextBlock Text="Группа:" />
                         <ComboBox Width="150" Margin="5,0" x:Name="attendanceClassComboBox" VerticalAlignment="Top"/>
                         <Button Content="Загрузить" Width="100" Click="LoadAttendance_Click" VerticalAlignment="Top"/>
                     </StackPanel>
@@ -57,15 +60,15 @@
                         <TextBlock Text="Учебная дисциплина:"/>
                         <ComboBox Width="200" Margin="0,5" x:Name="homeworkSubjectComboBox" HorizontalAlignment="Left"/>
                         <TextBlock Text="Дата урока:"/>
-                        <DatePicker x:Name="homeworkDatePicker" Margin="0,5"/>
+                        <DatePicker x:Name="HomeworkDatePicker" Margin="0,5" Width="200" HorizontalAlignment="Left"/>
                         <TextBlock Text="Домашнее задание:"/>
-                        <TextBox x:Name="homeworkTextBox" Height="100" Margin="0,5"/>
+                        <TextBox x:Name="HomeworkTextBox" Height="100" Margin="0,5"/>
                         <Button Content="Сохранить" Width="150" Click="SaveHomework_Click"/>
                     </StackPanel>
                     <DataGrid x:Name="homeworkDataGrid" Margin="10,250,10,10" AutoGenerateColumns="False">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Дата" Binding="{Binding LessonDate}"/>
-                            <DataGridTextColumn Header="Класс" Binding="{Binding ClassName}"/>
+                            <DataGridTextColumn Header="Группа" Binding="{Binding ClassName}"/>
                             <DataGridTextColumn Header="Предмет" Binding="{Binding SubjectName}"/>
                             <DataGridTextColumn Header="Задание" Binding="{Binding Text}"/>
                         </DataGrid.Columns>

@@ -15,10 +15,6 @@ public class SubjectAssignment
     public int TeacherId { get; set; }
     public Teacher Teacher { get; set; }
 
-    public int SemesterId { get; set; }
-    public Semester Semester { get; set; }
-
     public ICollection<Schedule> Schedules { get; set; }
     public ICollection<Lesson> Lessons { get; set; }
-    public ICollection<Subject> Subjects { get; set; }
 }

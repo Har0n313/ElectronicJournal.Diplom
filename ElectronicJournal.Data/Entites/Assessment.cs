@@ -7,8 +7,7 @@ public class Assessment
     public int Id { get; set; }
     public int StudentId { get; set; }
     public int LessonId { get; set; }
-    public DateTime DateCreated { get; set; }
-    public int GradeValue { get; set; } 
+    public int MarkValue { get; set; } 
     public AssessmentType Type { get; set; }
     
 

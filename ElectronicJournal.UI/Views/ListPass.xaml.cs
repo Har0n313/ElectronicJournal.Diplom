@@ -28,7 +28,7 @@ namespace ElectronicJournal.WPF.Views
         private void searchBt_Click(object sender, RoutedEventArgs e)
         {
             var date = Convert.ToDateTime(dateTxt.Text);
-            dataGrid.ItemsSource = journalEntities.Pass.Where(m => m.data == date && m.idDiscipline == IdDisc).ToList();
+            //dataGrid.ItemsSource = journalEntities.Pass.Where(m => m.data == date && m.idDiscipline == IdDisc).ToList();
         }
     }
 }

@@ -25,16 +25,9 @@ namespace ElectronicJournal.WPF.Views
 
         private async void ListSheduleBt_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(klassTxt.Text))
+            if (GroupComboBox.SelectedItem is not Group group)
             {
-                MessageBox.Show("Введите группу");
-                return;
-            }
-
-            var group = (await _groupService.GetAllGroups()).FirstOrDefault(g => g.Name == klassTxt.Text);
-            if (group == null)
-            {
-                MessageBox.Show("Группа не найдена");
+                MessageBox.Show("Выберите группу");
                 return;
             }
 
@@ -48,6 +41,7 @@ namespace ElectronicJournal.WPF.Views
             await LoadScheduleForDay(DayOfWeek.Saturday, saturdayGrid);
         }
 
+
         private async Task LoadScheduleForDay(DayOfWeek day, DataGrid grid)
         {
             var data = await _scheduleService.GetScheduleByDay(_currentGroupId, day);
@@ -55,7 +49,7 @@ namespace ElectronicJournal.WPF.Views
             {
                 s.Id,
                 s.PairNumber,
-                Time = $"{s.StartTime:hh\\:mm} - {s.EndTime:hh\\:mm}",
+                Time = $"{s.StartTime} - {s.EndTime}",
                 Subject = s.SubjectAssignment?.Subject?.Name ?? "",
                 Teacher = FormatTeacherName(s.SubjectAssignment?.Teacher),
                 s.Room
@@ -103,21 +97,6 @@ namespace ElectronicJournal.WPF.Views
 
         private async void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (!int.TryParse(pairNumberTxt.Text, out int pairNum) || !Enum.TryParse(dayTxt.Text, out DayOfWeek day))
-            {
-                MessageBox.Show("Введите корректные данные дня и номера пары");
-                return;
-            }
-
-            var entries = await _scheduleService.GetScheduleByDay(_currentGroupId, day);
-            var entry = entries.FirstOrDefault(s => s.PairNumber == pairNum);
-            if (entry == null)
-            {
-                MessageBox.Show("Запись не найдена");
-                return;
-            }
-
-            await _scheduleService.DeleteSchedule(entry.Id);
             await ListSheduleBt_ClickReload();
         }
 
@@ -133,49 +112,20 @@ namespace ElectronicJournal.WPF.Views
 
         private async Task<Schedule?> TryParseScheduleInputAsync()
         {
-            if (!Enum.TryParse(dayTxt.Text, out DayOfWeek day) ||
-                !int.TryParse(pairNumberTxt.Text, out int pairNumber) ||
-                string.IsNullOrWhiteSpace(timeTxt.Text) ||
-                string.IsNullOrWhiteSpace(discTxt.Text) ||
+            if (GroupComboBox.SelectedItem is not Group selectedGroup ||
+                dayComboBox.SelectedItem is not DayOfWeek day ||
+                PairNumberComboBox.SelectedItem is not int pairNumber ||
+                AssignmentComboBox.SelectedValue is not int assignmentId ||
                 string.IsNullOrWhiteSpace(roomTxt.Text))
             {
                 MessageBox.Show("Заполните все поля корректно.");
                 return null;
             }
 
-            var subjects = await _subjectService.GetAllSubjects();
-            var subject = subjects.FirstOrDefault(s => s.Name == discTxt.Text);
-
-            var teacherId = (int?)teacherComboBox.SelectedValue;
-            if (teacherId == null)
+            var times = (await _scheduleService.GetPairTimes(pairNumber)).ToList();
+            if (times.Count != 2)
             {
-                MessageBox.Show("Выберите преподавателя из списка.");
-                return null;
-            }
-
-            var teacher = await _teacherService.GetTeacherById(teacherId.Value);
-
-            if (subject == null || teacher == null)
-            {
-                MessageBox.Show("Предмет или преподаватель не найден.");
-                return null;
-            }
-
-            var assignment = teacher.SubjectAssignments.FirstOrDefault(sa =>
-                sa.SubjectId == subject.Id && sa.GroupId == _currentGroupId);
-
-            if (assignment == null)
-            {
-                MessageBox.Show("Назначение преподавателя на предмет в этой группе не найдено.");
-                return null;
-            }
-
-            var timeParts = timeTxt.Text.Split('-');
-            if (timeParts.Length != 2 || 
-                !TimeSpan.TryParse(timeParts[0], out var start) || 
-                !TimeSpan.TryParse(timeParts[1], out var end))
-            {
-                MessageBox.Show("Неверный формат времени. Пример: 08:30-10:00");
+                MessageBox.Show("Не удалось получить время для выбранного номера пары.");
                 return null;
             }
 
@@ -183,26 +133,117 @@ namespace ElectronicJournal.WPF.Views
             {
                 Day = day,
                 PairNumber = pairNumber,
-                StartTime = start,
-                EndTime = end,
-                Room = roomTxt.Text,
-                SubjectAssignmentId = assignment.Id
+                StartTime = times[0],
+                EndTime = times[1],
+                Room = roomTxt.Text.Trim(),
+                SubjectAssignmentId = assignmentId
             };
         }
 
-        private async void Window_Loaded(object sender, RoutedEventArgs e)
+
+        private void PairNumberComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            await LoadTeachers();
+            if (PairNumberComboBox.SelectedItem is int selectedPair &&
+                _pairTimes.TryGetValue(selectedPair, out var time))
+            {
+                TimeDisplayTextBlock.Text = $"{time.Start}-{time.End}";
+            }
+            else
+            {
+                TimeDisplayTextBlock.Text = string.Empty;
+            }
         }
 
-        private async Task LoadTeachers()
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            var teachers = await _teacherService.GetAllTeachers();
-            teacherComboBox.ItemsSource = teachers.Select(t => new
-            {
-                t.Id,
-                FullName = $"{t.LastName} {t.FirstName[0]}. {t.MiddleName?[0]}.".TrimEnd('.')
-            }).ToList();
+            LoadGroups();
+            LoadDaysOfWeek();
+            LoadPairNumbers();
         }
+
+        private void LoadPairNumbers()
+        {
+            PairNumberComboBox.ItemsSource = _pairTimes.Keys.ToList();
+        }
+
+
+        private async void LoadGroups()
+        {
+            try
+            {
+                var groups = await _groupService.GetAllAsync();
+
+                if (GroupComboBox != null)
+                {
+                    GroupComboBox.ItemsSource = groups.OrderBy(s => s.Name);
+                    GroupComboBox.DisplayMemberPath = "Name";
+                    GroupComboBox.SelectedValuePath = "Id";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузке групп: {ex.Message}");
+            }
+        }
+
+        private void LoadDaysOfWeek()
+        {
+            dayComboBox.ItemsSource = Enum.GetValues(typeof(DayOfWeek));
+        }
+
+
+        private async void GroupComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (GroupComboBox.SelectedItem is Group group)
+            {
+                _currentGroupId = group.Id;
+                await LoadAssignmentsForGroup(group.Id);
+            }
+        }
+
+        private async Task LoadAssignmentsForGroup(int groupId)
+        {
+            try
+            {
+                var teachers = await _teacherService.GetAllTeachers(); // Важно: вместе с SubjectAssignments и Subject
+
+                var assignments = teachers
+                    .SelectMany(t => t.SubjectAssignments
+                        .Where(sa => sa.GroupId == groupId)
+                        .Select(sa => new
+                        {
+                            AssignmentId = sa.Id,
+                            TeacherLastName = t.LastName,
+                            Display = $"{t.LastName} — {sa.Subject?.Name ?? "Без предмета"}"
+                        }))
+                    .OrderBy(a => a.TeacherLastName) // Сортировка по фамилии
+                    .Select(a => new
+                    {
+                        a.AssignmentId,
+                        a.Display
+                    })
+                    .ToList();
+
+                AssignmentComboBox.ItemsSource = assignments;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузке назначений: {ex.Message}");
+            }
+        }
+
+
+        private readonly Dictionary<int, (string Start, string End)> _pairTimes = new()
+        {
+            { 1, ("8:30", "9:50") },
+            { 2, ("10:00", "11:20") },
+            { 3, ("11:30", "12:50") },
+            { 4, ("13:20", "14:40") },
+            { 5, ("14:50", "16:10") },
+            { 6, ("16:20", "17:40") },
+            { 7, ("17:50", "18:10") },
+            { 8, ("18:20", "19:40") },
+        };
     }
 }
